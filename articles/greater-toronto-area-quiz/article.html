@@ -20,55 +20,83 @@
   You’ve come to a site called Torontoverse, so at the very least you don’t have
   an aversion to the place — or you came here by mistake. Whatever.
 </p>
-
 <p>
   Anyway, now that you’re here, let’s ask a simple question: How well do you
   know the place you may or may not have an aversion to?
 </p>
-
 <p>
   More to the point: The Greater Toronto Area is made up of 25 distinct places —
   a mix of urban, suburban, and rural municipalities. How many of them can you
   name?
 </p>
-
 <p>Take the Torontoverse quiz to find out!</p>
 
-<h3>Instructions:</h3>
+<form class="quiz text-center">
+  <div
+    class="flex flex-row items-center h-6 justify-evenly m-1 relative text-sm w-full"
+  >
+    <!-- fill bar showing time left (#/180 seconds) -->
+    <div
+      class="absolute bg-green-600 h-6 left-0 top-0 w-full"
+      id="timeBar"
+    ></div>
+    <!-- fill bar showing progress (#/25) -->
+    <div
+      class="absolute bg-purple-400 h-6 left-0 top-0 w-0"
+      id="scoreBar"
+    ></div>
+    <p class="mb-0 text-sm z-20">
+      Time Left: <span id="minutes">3</span>:<span id="seconds">00</span>
+    </p>
+    <p class="mb-0 text-sm z-10"><span id="correct">0</span> / 25</p>
+  </div>
+  <div class="my-2">
+    <label for="guesses" id="guessLabel">Enter guesses here:</label>
+    <!-- user enters guesses into search bar -->
+    <input
+      class="bg-gray-800 p-1 rounded-lg text-center"
+      type="text"
+      name="guesses"
+      id="guesses"
+      placeholder="guesses go here"
+      disabled
+    />
+  </div>
+  <!-- press button to start 3 minute timer -->
+  <button
+    class="border-white border-2 px-2 py-1 rounded-lg"
+    id="startQuiz"
+    type="submit"
+  >
+    Start Quiz
+  </button>
+</form>
 
+<h3>Instructions:</h3>
 <ul>
   <li>
     Type the names of each municipality you can remember one by one into the
     empty field below.
   </li>
-
   <li>
     When you type in a correct one (“Toronto” is kind of a gimme …), that
     municipality will be highlighted on the map.
   </li>
-
   <li>You will have three minutes to guess them all.</li>
 </ul>
-
 <p>And that’s it. When you’re ready, just hit the start button.</p>
 
-<p>***QUIZ EXECUTION***</p>
-
 <h3>Scoring:</h3>
-
 <ul>
   <li>
     21–25 correct: You’re the Greater-est. Drake should write a song about you.
   </li>
-
   <li>
     11–20 correct: Well played. You get the GTA, but not, like, all of it.
   </li>
-
   <li>
     1–10 correct: How <i>did</i> you get to this site, anyway? You technically
     don’t even know the GTA well enough to hate it.
   </li>
-
   <li>0 correct: You didn’t even get “Toronto”?!</li>
 </ul>

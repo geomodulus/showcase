@@ -1,5 +1,5 @@
 {
-  "id": "7d93e62e-cd82-11ec-9d64-0242ac120002",
+  "id": "9a11951a-d090-11ec-9d64-0242ac120002",
   "display_name": "The great Greater Toronto Area municipality quiz",
   "h2": "How many GTA municipalities can you name in three minutes?",
   "img_url": "https://media.geomodul.us/img/GTA-highway.jpg",
@@ -7,5 +7,17 @@
   "pub_date": "2022-06-07",
   "code_credit": "Kyle Duncan",
   "loc": { "lng": -79.3217, "lat": 43.7637 },
-  "zoom": 10.055
+  "zoom": 5,
+  "geojson_datasets": [
+    {
+      "id": "9a1197cc-d090-11ec-9d64-0242ac120002",
+      "name": "municipal-boundaries",
+      "url": "https://media.geomodul.us/articles/municipal-quiz/municipal-boundaries.geojson"
+    },
+    {
+      "id": "9a119920-d090-11ec-9d64-0242ac120002",
+      "name": "municipal-centres",
+      "url": "https://media.geomodul.us/articles/municipal-quiz/gta-municipalities.geojson"
+    }
+  ]
 }
