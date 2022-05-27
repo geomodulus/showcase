@@ -1,23 +1,225 @@
-// establish empty objects for data
-const answerList = [];
-const coordinates = {};
-const correctGuesses = [];
+const quiz = {
+  // establish objects for data
+  answerList: [],
+  comments: {
+    best: "You’re the Greater-est. Drake should write a song about you.", // 21–25 correct
+    better: "Well played. You get the GTA, but not, like, all of it.", // 11–20 correct
+    worse:
+      "How did you get to this site, anyway? You technically don’t even know the GTA well enough to hate it.", // 1–10 correct
+    worst: "You didn’t even get “Toronto”?!", // 0 correct
+  },
+  coordinates: {},
+  correctAnswers: [],
+  missedAnswers: [],
+  time: {
+    minutes: 3,
+    seconds: 0,
+  },
+  timer: null, // stores interval timer later
+  totalAnswers: 0,
+  result: {
+    score: 0,
+    time: {},
+  },
+};
+
+/*
+Add arrays of comments to be used randomly for particular circumstances
+- right answer
+- repeated answer
+- wrong answer
+- encouraging if stuck
+*/
+
+/* INITIALIZE QUIZ */
+
+quiz.init = () => {
+  // grab visual elements
+  quiz.form = document.querySelector("form.quiz");
+  quiz.giveUp = document.getElementById("giveUp");
+  quiz.guessLabel = document.getElementById("guessLabel");
+  quiz.minutes = document.getElementById("minutes");
+  quiz.scoreBar = document.getElementById("scoreBar");
+  quiz.seconds = document.getElementById("seconds");
+  quiz.startButton = document.getElementById("startQuiz");
+  quiz.timeBar = document.getElementById("timeBar");
+  quiz.totalAnswers = document.getElementById("totalAnswers");
+  quiz.totalCorrect = document.getElementById("correct");
+  quiz.userInput = document.getElementById("guesses");
+
+  // handle submit in form element
+  quiz.form.addEventListener("submit", quiz.handleSubmit);
+  // listen for user gueses
+  quiz.userInput.addEventListener("input", quiz.checkGuess);
+  // listen for the user giving up
+  quiz.giveUp.addEventListener("click", () => quiz.end("giveUp"));
+  // allow the user to start the quiz
+  quiz.startButton.addEventListener(
+    "click",
+    (e) => {
+      e.preventDefault();
+      quiz.start();
+      quiz.startButton.innerText = "Submit";
+    },
+    { once: true }
+  );
+
+  // add instructions to legend, hide on quiz start
+  quiz.instructions();
+};
+
+quiz.instructions = () => {
+  // build legend element
+  const legend = document.createElement("div");
+  legend.className =
+    "bg-gray-800 border-2 flex flex-row p-2 shadow-window transition duration-1000 w-[566px]";
+  legend.id = "legend";
+
+  const siien = document.createElement("img");
+  siien.className = "h-[154px]";
+  siien.src = "/kduncan/siien/cnTower-no-bg.png";
+  legend.appendChild(siien);
+  // <img class="h-[138px]" src="/kduncan/siien/cnTower-no-bg.png" alt="">
+
+  const legendBody = document.createElement("div");
+  legendBody.className = "m-2 text-sm";
+  legendBody.innerHTML = `
+    <div>
+      <h3>Instructions</h3>
+      <ul class="text-xs">
+        <li class="mt-1">Type the names of each municipality you can remember one by one into the empty field.</li>
+        <li class="mt-1">When you type in a correct one (“Toronto” is kind of a gimme), that municipality is highlighted on the map.</li>
+        <li class="mt-1">You will have three minutes to guess them all.</li>
+        <li class="mt-1">When you’re ready, just hit the "Start Quiz" button.</li>
+      </ul>
+    </div>
+  `;
+  legend.appendChild(legendBody);
+  // add legend to page
+  module.addToLegend(legend);
+  module.showLegend();
+};
+
+// handles the user clicking the button during the quiz
+quiz.handleSubmit = (e) => {
+  e.preventDefault();
+  quiz.guessLabel.innerText = "Nope, that ain't right.";
+  quiz.userInput.value = "";
+};
+
+// starts the quiz
+quiz.start = () => {
+  // build quiz data
+  quiz.buildData();
+  // start timer
+  quiz.startTimer();
+  // enable input and give focus
+  quiz.userInput.classList.add("bg-gray-600");
+  quiz.userInput.disabled = false;
+  quiz.userInput.focus();
+};
+
+/* START OF QUIZ */
 
 // add each location in the geojson source to the answer list
 // and to the list of coordinates for flyTo on correct guess
-function buildData() {
-  const sourceData = module.map.getSource("municipal-centres");
-  sourceData._data.features.forEach((centre) => {
-    answerList.push(centre.properties.MUNICIPAL_NAME_SHORTFORM);
-    coordinates[centre.properties.MUNICIPAL_NAME_SHORTFORM] =
-      centre.geometry.coordinates;
-  });
-}
+quiz.buildData = () => {
+  if (!quiz.answerList.length) {
+    const sourceData = module.map.getSource("municipal-centres");
+    sourceData._data.features.forEach((centre) => {
+      quiz.answerList.push(centre.properties.MUNICIPAL_NAME_SHORTFORM);
+      quiz.coordinates[centre.properties.MUNICIPAL_NAME_SHORTFORM] =
+        centre.geometry.coordinates;
+    });
+  }
+  quiz.masterTotals = {
+    answers: quiz.answerList.length,
+    time: quiz.time.minutes * 60 + quiz.time.seconds,
+  };
+  quiz.totalAnswers.innerText = quiz.masterTotals.answers;
+};
+
+// run a timer and display on screen
+quiz.startTimer = () => {
+  quiz.timer = setInterval(() => {
+    if (quiz.time.seconds === 0) {
+      if (quiz.time.minutes === 0) {
+        clearInterval(quiz.timer);
+        quiz.end("lose");
+      } else {
+        quiz.time.minutes--;
+        quiz.time.seconds = 59;
+      }
+    } else {
+      quiz.time.seconds--;
+    }
+
+    quiz.minutes.innerText = quiz.time.minutes;
+    if (quiz.time.seconds < 10)
+      quiz.seconds.innerText = `0${quiz.time.seconds}`;
+    else quiz.seconds.innerText = quiz.time.seconds;
+    quiz.timeBar.style.width = `${quiz.timeLeftPercentage(quiz.time)}%`;
+    quiz.checkBarZindex();
+  }, 1000);
+  // stop timer if user leaves the article
+  window.addEventListener("flexWindowReset", () => clearInterval(quiz.timer));
+};
+
+// checks the guess against available answers
+quiz.checkGuess = () => {
+  const guess = quiz.userInput.value.trim().toUpperCase();
+  // = = = = = * * * = = = = = //
+  // testing function, remove before production
+  if (guess === "WIN") {
+    quiz.userInput.value = "";
+    quiz.end("win");
+  }
+  // = = = = = * * * = = = = = //
+  if (quiz.answerList.includes(guess)) {
+    if (quiz.correctAnswers.includes(guess)) {
+      quiz.guessLabel.innerText = "Already got that one!";
+    } else quiz.correctGuess(guess);
+    // reset user input
+    quiz.userInput.value = "";
+  }
+};
+
+// remove fill and flyTo region on successful guess
+quiz.correctGuess = (answer) => {
+  // add to array of correct answers
+  quiz.correctAnswers.push(answer);
+  // random list of encouragment? dependent on progress?
+  quiz.guessLabel.innerText = "Nice work, you got one!";
+  // add to total correct on screen & adjust var visual
+  quiz.totalCorrect.textContent = quiz.correctAnswers.length;
+  quiz.scoreBar.style.width = `${Math.round(
+    (quiz.correctAnswers.length / 25) * 100
+  )}%`;
+  quiz.checkBarZindex();
+  quiz.revealAnswer(answer);
+  if (quiz.correctAnswers.length === quiz.masterTotals.answers) {
+    setTimeout(() => quiz.end("win"), 1100);
+  }
+};
+
+quiz.revealAnswer = (answer) => {
+  // fly to region, reveal
+  module.map
+    .easeTo({
+      center: quiz.coordinates[answer],
+      duration: 1500,
+      offset: [-150, 0],
+      zoom: 5,
+    })
+    .setFilter("boundary-fills", quiz.getFilter("fill"))
+    // add label with region name
+    .setFilter("labels", quiz.getFilter("label"));
+};
 
 // build a mapbox filter that includes the correct guesses so far
-function getFilter(type) {
+quiz.getFilter = (type) => {
   const filterArray = [type === "fill" ? "all" : "any"];
-  correctGuesses.forEach((answer) => {
+  quiz.correctAnswers.forEach((answer) => {
     filterArray.push([
       type === "fill" ? "!=" : "==",
       ["get", "MUNICIPAL_NAME_SHORTFORM"],
@@ -25,166 +227,219 @@ function getFilter(type) {
     ]);
   });
   return filterArray;
-}
+};
 
-// fly through each missed answer after quiz is complete
-function showRemaining() {
-  guessLabel.innerText = "Here's what you missed...";
-  const remaining = answerList.filter(
-    (municipality) => !correctGuesses.includes(municipality)
-  );
-  remaining.forEach((municipality, index) => {
-    setTimeout(() => {
-      correctGuesses.push(municipality);
-      correctGuess(municipality);
-    }, index * 2000);
-  });
-}
+// caclulate the time remaining as a percentage
+quiz.timeLeftPercentage = ({ minutes, seconds }) => {
+  const secLeft = minutes * 60 + seconds;
+  const percentage = Math.round((secLeft / 180) * 100);
+  return percentage;
+};
+
+quiz.checkBarZindex = () => {
+  const scoreWidth = +quiz.scoreBar.style.width.slice(0, -1);
+  const timeWidth = +quiz.timeBar.style.width.slice(0, -1);
+  if (scoreWidth > timeWidth) {
+    quiz.timeBar.style.zIndex = "10";
+  }
+};
+
+/* END OF QUIZ */
 
 // handles different end of quiz conditions
-function endQuiz(outcome) {
-  quizForm.removeEventListener("submit", handleSubmit);
-  quizForm.addEventListener("submit", (e) => e.preventDefault());
+quiz.end = (outcome) => {
+  quiz.result = {
+    score: quiz.correctAnswers.length,
+    time: { ...quiz.time },
+  };
+  quiz.form.removeEventListener("submit", quiz.handleSubmit);
+  quiz.form.addEventListener("submit", (e) => e.preventDefault());
+  quiz.giveUp.removeEventListener("click", () => quiz.end("giveUp"));
+  quiz.giveUp.innerText = "Reset Quiz";
+  quiz.giveUp.addEventListener("click", quiz.reset);
   if (outcome === "lose") {
     window.alert("Time's up!");
     // show and lock in score
-    guessLabel.innerText = "You can keep guessing...";
+    quiz.guessLabel.innerText = "You can keep guessing...";
     // offer to reveal rest of answers
-    startButton.innerText = "Show Remaining";
-    startButton.addEventListener("click", showRemaining, { once: true });
+    quiz.startButton.innerText = "Show Remaining";
+    quiz.startButton.addEventListener("click", quiz.showRemaining, {
+      once: true,
+    });
   }
   if (outcome === "win") {
-    quizTimer("stop");
-    window.alert("Well done, you go them all!");
+    // stop the timer
+    clearInterval(quiz.timer);
+    // window.alert("Well done, you got them all!");
+    quiz.guessLabel.innerText = "Well done, you got them all!";
     // prompt to share visual: 25/25 + time remaining (bars background?)
   }
-}
+  if (outcome === "giveUp") {
+    // stop the timer
+    clearInterval(quiz.timer);
+    quiz.guessLabel.innerText = "Better luck next time!";
+    // offer to reveal rest of answers
+    quiz.startButton.innerText = "Show Remaining";
+    quiz.startButton.addEventListener("click", quiz.showRemaining, {
+      once: true,
+    });
+  }
+  quiz.resultLegend();
+};
 
-// remove fill and flyTo region on successful guess
-function correctGuess(answer) {
+// replace legend with result and comment (to share?)
+quiz.resultLegend = () => {
+  // grab legend element
+  const legendText = document.getElementById("legend").children[1];
+
+  // compile result info
+  const { score, time } = quiz.result;
+  let timeLeft;
+  if (time.minutes === 0 && time.seconds === 0) {
+    timeLeft = "no time left";
+  } else {
+    timeLeft = `${time.minutes}:${
+      time.seconds > 9 ? time.seconds : `0${time.seconds}`
+    } remaining`;
+  }
+  let comment = quiz.comments.worst;
+  if (score > 0) comment = quiz.comments.worse;
+  if (score > 10) comment = quiz.comments.better;
+  if (score > 20) {
+    comment = quiz.comments.best;
+    quiz.funBorder();
+  }
+
+  // replace with score and comment
+  legendText.innerHTML = `
+    <h3>Game Over</h3>
+    <ul class="text-xs">
+      <li class="mt-1">You got ${score} out of ${quiz.answerList.length} municipalties with ${timeLeft}.</li>
+      <li class="mt-1">${comment}</li>
+      <li class="mt-1">Thanks for playing!</li>
+    </ul>
+  `;
+};
+
+// make it look fun and exciting
+quiz.funBorder = () => {
+  const legend = document.getElementById("legend");
+  const colors = ["#7C3AED", "#00B073", "#00C1D4", "#EB6894"];
+  legend.style.borderTopColor = colors[0];
+  legend.style.borderLeftColor = colors[1];
+  legend.style.borderBottomColor = colors[2];
+  legend.style.borderRightColor = colors[3];
+  quiz.rainbow = setInterval(() => {
+    colors.push(colors[0]);
+    colors.shift();
+    legend.style.borderTopColor = colors[0];
+    legend.style.borderLeftColor = colors[1];
+    legend.style.borderBottomColor = colors[2];
+    legend.style.borderRightColor = colors[3];
+  }, 1000);
+};
+
+// fly through each missed answer after quiz is complete
+quiz.showRemaining = () => {
+  quiz.guessLabel.innerText = "Here's what you missed...";
+  const remaining = quiz.answerList.filter(
+    (municipality) => !quiz.correctAnswers.includes(municipality)
+  );
+  remaining.forEach((municipality, index) => {
+    setTimeout(() => {
+      quiz.missedAnswers.push(municipality);
+      quiz.revealMissed(municipality);
+    }, index * 2500);
+  });
+  // change button to reset / try again
+};
+
+quiz.revealMissed = (answer) => {
+  // fly to region, reveal
   module.map
     .easeTo({
-      center: coordinates[answer],
+      center: quiz.coordinates[answer],
       duration: 1500,
       offset: [-150, 0],
       zoom: 5,
     })
-    .setFilter("boundary-fills", getFilter("fill"))
+    .setFilter("boundary-fills", quiz.getMissedFilter("fill"))
     // add label with region name
-    .setFilter("labels", getFilter("label"));
-}
+    .setFilter("missedLabels", quiz.getMissedFilter("label"));
+};
 
-// grab guess and answer visual elements
-const totalCorrect = document.getElementById("correct");
-const guessLabel = document.getElementById("guessLabel");
-const scoreBar = document.getElementById("scoreBar");
-const timeBar = document.getElementById("timeBar");
-
-function checkBarZindex() {
-  const scoreWidth = +scoreBar.style.width.slice(0, -1);
-  const timeWidth = +timeBar.style.width.slice(0, -1);
-  if (scoreWidth > timeWidth) {
-    timeBar.style.zIndex = "10";
+// build a mapbox filter that includes the correct guesses so far
+quiz.getMissedFilter = (type) => {
+  const filterArray = [type === "fill" ? "all" : "any"];
+  if (type === "fill") {
+    quiz.correctAnswers.forEach((answer) => {
+      filterArray.push(["!=", ["get", "MUNICIPAL_NAME_SHORTFORM"], answer]);
+    });
   }
-}
+  quiz.missedAnswers.forEach((answer) => {
+    filterArray.push([
+      type === "fill" ? "!=" : "==",
+      ["get", "MUNICIPAL_NAME_SHORTFORM"],
+      answer,
+    ]);
+  });
+  return filterArray;
+};
 
-// checks the guess against available answers
-function checkGuess() {
-  const theGuess = userInput.value.trim().toUpperCase();
-  if (answerList.includes(theGuess)) {
-    if (correctGuesses.includes(theGuess)) {
-      guessLabel.innerText = "Already got that one!";
-    } else {
-      correctGuesses.push(theGuess);
-      // fly to region, reveal
-      correctGuess(theGuess);
-      guessLabel.innerText = "Nice work, you got one!"; // random list of encouragment? dependent on progress?
-      totalCorrect.textContent = correctGuesses.length;
-      scoreBar.style.width = `${Math.round(
-        (correctGuesses.length / 25) * 100
-      )}%`;
-      checkBarZindex();
-      if (correctGuesses.length === 25) endQuiz("win");
-    }
-    // reset user input
-    userInput.value = "";
-  }
-}
+/* RESET QUIZ */
+quiz.reset = () => {
+  quiz.userInput.disabled = true;
 
-// grab guess input and listen to input
-const userInput = document.getElementById("guesses");
-userInput.addEventListener("input", checkGuess);
-
-// caclulate the time remaining as a percentage
-function timeLeftPercentage({ minutes, seconds }) {
-  const secLeft = minutes * 60 + seconds;
-  const percentage = Math.round((secLeft / 180) * 100);
-  return percentage;
-}
-
-// run a timer and display on screen
-function quizTimer(startStop) {
-  if (startStop === "stop") {
-    if (timer) clearInterval(timer);
-    return;
-  }
-  const time = {
+  clearInterval(quiz.timer);
+  quiz.correctAnswers = [];
+  quiz.missedAnswers = [];
+  quiz.time = {
     minutes: 3,
     seconds: 0,
   };
-  const timer = setInterval(() => {
-    const minutes = document.getElementById("minutes");
-    const seconds = document.getElementById("seconds");
-    if (time.seconds === 0) {
-      if (time.minutes === 0) {
-        clearInterval(timer);
-        endQuiz("lose");
-      } else {
-        time.minutes--;
-        time.seconds = 59;
-      }
-    } else {
-      time.seconds--;
-    }
-    minutes.innerText = time.minutes;
-    if (time.seconds < 10) seconds.innerText = `0${time.seconds}`;
-    else seconds.innerText = time.seconds;
-    timeBar.style.width = `${timeLeftPercentage(time)}%`;
-    checkBarZindex();
-  }, 1000);
-  // stop timer if user leaves the article
-  window.addEventListener("flexWindowReset", () => clearInterval(timer));
-}
+  quiz.result = { score: 0, time: {} };
 
-// enables user to start the quiz
-function startQuiz() {
-  // build quiz data
-  buildData();
-  // start timer
-  quizTimer();
-  // enable input and give focus
-  userInput.classList.add("bg-gray-600");
-  userInput.disabled = false;
-  userInput.focus();
-}
+  // reset mapbox filters
+  module.map
+    .setFilter("boundary-fills", quiz.getFilter("fill"))
+    .setFilter("labels", quiz.getFilter("label"))
+    .setFilter("missedLabels", quiz.getFilter("label"));
 
-// handles the user clicking the button during the quiz
-function handleSubmit(e) {
-  e.preventDefault();
-  guessLabel.innerText = "Nope, that ain't right.";
-  userInput.value = "";
-}
-const quizForm = document.querySelector("form.quiz");
-quizForm.addEventListener("submit", handleSubmit);
+  // reset buttons elements (innerText)
+  quiz.guessLabel.innerText = "Enter guesses below";
+  quiz.startButton.innerText = "Start Quiz";
+  quiz.giveUp.innerText = "Give Up";
 
-// allows the user to start the quiz
-const startButton = document.getElementById("startQuiz");
-startButton.addEventListener(
-  "click",
-  (e) => {
-    e.preventDefault();
-    startQuiz();
-    startButton.innerText = "Submit";
-  },
-  { once: true }
-);
+  // reset button triggers
+  quiz.startButton.removeEventListener("click", quiz.showRemaining);
+  quiz.startButton.addEventListener(
+    "click",
+    (e) => {
+      e.preventDefault();
+      quiz.start();
+      quiz.startButton.innerText = "Submit";
+    },
+    { once: true }
+  );
+  quiz.giveUp.removeEventListener("click", quiz.reset);
+  quiz.giveUp.addEventListener("click", () => quiz.end("giveUp"));
+  quiz.form.removeEventListener("submit", (e) => e.preventDefault());
+  quiz.form.addEventListener("submit", quiz.handleSubmit);
+
+  // reset time/score elements
+  quiz.minutes.innerText = quiz.time.minutes;
+  if (quiz.time.seconds < 10) quiz.seconds.innerText = `0${quiz.time.seconds}`;
+  else quiz.seconds.innerText = quiz.time.seconds;
+  quiz.timeBar.style.width = "100%";
+  quiz.totalCorrect.textContent = quiz.correctAnswers.length;
+  quiz.scoreBar.style.width = "0%";
+  quiz.checkBarZindex();
+
+  // return instructions to legend
+  const legend = document.getElementById("legend");
+  legend.remove();
+  quiz.instructions();
+};
+
+/* EXECUTE QUIZ */
+quiz.init();

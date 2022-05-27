@@ -1,33 +1,36 @@
+const layout = {
+  "symbol-placement": "point",
+  "text-field": [
+    "format",
+    ["get", "MUNICIPAL_NAME_SHORTFORM"],
+    { "font-scale": 2 },
+  ],
+  "text-font": ["JetBrains Mono Regular"],
+  "text-size": ["interpolate", ["linear"], ["zoom"], 11, 12, 12.5, 15, 14, 20],
+  "text-ignore-placement": true,
+  "text-allow-overlap": true,
+};
+
 function addLayers() {
   module.addFeatureLayer({
     id: "labels",
     type: "symbol",
     filter: ["==", ["get", "MUNICIPAL_NAME_SHORTFORM"], ""],
     source: "municipal-centres",
-    layout: {
-      "symbol-placement": "point",
-      "text-field": [
-        "format",
-        ["get", "MUNICIPAL_NAME_SHORTFORM"],
-        { "font-scale": 2 },
-      ],
-      "text-font": ["JetBrains Mono Regular"],
-      "text-size": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        11,
-        12,
-        12.5,
-        15,
-        14,
-        20,
-      ],
-      "text-ignore-placement": true,
-      "text-allow-overlap": true,
-    },
+    layout: layout,
     paint: {
       "text-color": "#A77BF5", // purple
+      "text-opacity": 0.8,
+    },
+  });
+  module.addFeatureLayer({
+    id: "missedLabels",
+    type: "symbol",
+    filter: ["==", ["get", "MUNICIPAL_NAME_SHORTFORM"], ""],
+    source: "municipal-centres",
+    layout: layout,
+    paint: {
+      "text-color": "#EA737C", // red
       "text-opacity": 0.8,
     },
   });
