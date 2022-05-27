@@ -64,7 +64,7 @@ quiz.init = () => {
     { once: true }
   );
 
-  // add instructions to legend, hide on quiz start
+  // add instructions to legend
   quiz.instructions();
 };
 
@@ -77,9 +77,9 @@ quiz.instructions = () => {
 
   const siien = document.createElement("img");
   siien.className = "h-[154px]";
-  siien.src = "/kduncan/siien/cnTower-no-bg.png";
+  siien.src =
+    "https://media.geomodul.us/articles/municipal-quiz/cnTower-no-bg.png";
   legend.appendChild(siien);
-  // <img class="h-[138px]" src="/kduncan/siien/cnTower-no-bg.png" alt="">
 
   const legendBody = document.createElement("div");
   legendBody.className = "m-2 text-sm";
@@ -345,13 +345,14 @@ quiz.showRemaining = () => {
   const remaining = quiz.answerList.filter(
     (municipality) => !quiz.correctAnswers.includes(municipality)
   );
+  quiz.timeouts = {};
   remaining.forEach((municipality, index) => {
-    setTimeout(() => {
+    const timeoutInfo = setTimeout(() => {
       quiz.missedAnswers.push(municipality);
       quiz.revealMissed(municipality);
     }, index * 2500);
+    quiz.timeouts[municipality] = timeoutInfo;
   });
-  // change button to reset / try again
 };
 
 quiz.revealMissed = (answer) => {
@@ -389,6 +390,12 @@ quiz.getMissedFilter = (type) => {
 /* RESET QUIZ */
 quiz.reset = () => {
   quiz.userInput.disabled = true;
+
+  if (quiz.timeouts) {
+    for (const municipality in quiz.timeouts) {
+      clearTimeout(quiz.timeouts[municipality]);
+    }
+  }
 
   clearInterval(quiz.timer);
   quiz.correctAnswers = [];
