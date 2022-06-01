@@ -3,9 +3,8 @@ const quiz = {
   answerList: [],
   comments: {
     best: "You’re the Greater-est. Drake should write a song about you.", // 21–25 correct
-    better: "Well played. You get the GTA, but not, like, all of it.", // 11–20 correct
-    worse:
-      "How did you get to this site, anyway? You technically don’t even know the GTA well enough to hate it.", // 1–10 correct
+    better: "Well played. You get the GTHA — just not, like, all of it.", // 11–20 correct
+    worse: "Don’t feel so bad. The GTHA is a large and mysterious place.", // 1–10 correct
     worst: "You didn’t even get “Toronto”?!", // 0 correct
   },
   coordinates: {},
@@ -85,12 +84,11 @@ quiz.instructions = () => {
   legendBody.className = "m-2 text-sm";
   legendBody.innerHTML = `
     <div>
-      <h3>Instructions</h3>
+      <h3>Quiz Instructions</h3>
       <ul class="text-xs">
-        <li class="mt-1">Type the names of each municipality you can remember one by one into the empty field.</li>
-        <li class="mt-1">When you type in a correct one (“Toronto” is kind of a gimme), that municipality is highlighted on the map.</li>
-        <li class="mt-1">You will have three minutes to guess them all.</li>
-        <li class="mt-1">When you’re ready, just hit the "Start Quiz" button.</li>
+        <li class="mt-1">• When you’re ready, hit the “Start Quiz” button.</li>
+        <li class="mt-1">• Enter the name of each municipality in the text field in the main article window.</li>
+        <li class="mt-1">• You will have three minutes to enter them all.</li>
       </ul>
     </div>
   `;
