@@ -71,11 +71,12 @@ quiz.instructions = () => {
   // build legend element
   const legend = document.createElement("div");
   legend.className =
-    "bg-gray-800 border-2 flex flex-row p-2 shadow-window transition duration-1000 w-[566px]";
+    "bg-gray-800 border-2 flex flex-row p-2 shadow-window transition duration-1000 w-[536px]";
   legend.id = "legend";
 
   const siien = document.createElement("img");
-  siien.className = "h-[154px]";
+  siien.className = "h-[116px] transition duration-700";
+  siien.id = "siien";
   siien.src =
     "https://media.geomodul.us/articles/municipal-quiz/cnTower-no-bg.png";
   legend.appendChild(siien);
@@ -96,11 +97,13 @@ quiz.instructions = () => {
   // add legend to page
   module.addToLegend(legend);
   module.showLegend();
+  quiz.siien = document.getElementById("siien");
 };
 
 // handles the user clicking the button during the quiz
 quiz.handleSubmit = (e) => {
   e.preventDefault();
+  quiz.animateSiien("turn");
   quiz.guessLabel.innerText = "Nope, that ain't right.";
   quiz.userInput.value = "";
 };
@@ -168,9 +171,9 @@ quiz.checkGuess = () => {
   const guess = quiz.userInput.value.trim().toUpperCase();
   // = = = = = * * * = = = = = //
   // testing function, remove before production
-  if (guess === "WIN") {
+  if (guess === "CHEAT") {
     quiz.userInput.value = "";
-    quiz.end("win");
+    quiz.end("cheat");
   }
   // = = = = = * * * = = = = = //
   if (quiz.answerList.includes(guess)) {
@@ -196,7 +199,26 @@ quiz.correctGuess = (answer) => {
   quiz.checkBarZindex();
   quiz.revealAnswer(answer);
   if (quiz.correctAnswers.length === quiz.masterTotals.answers) {
-    setTimeout(() => quiz.end("win"), 1100);
+    setTimeout(() => quiz.end("win"), 1000);
+  } else quiz.animateSiien("bounce");
+};
+
+quiz.animateSiien = (animation) => {
+  if (animation === "bounce") {
+    quiz.siien.classList.add("-translate-y-1/4");
+    setTimeout(() => {
+      quiz.siien.classList.add("animate-bounce");
+    }, 700);
+    setTimeout(() => {
+      quiz.siien.classList.remove("animate-bounce");
+      quiz.siien.classList.remove("-translate-y-1/4");
+    }, 3200);
+  }
+  if (animation === "turn") {
+    quiz.siien.classList.add("scale-x-[-1]");
+    setTimeout(() => {
+      quiz.siien.classList.remove("scale-x-[-1]");
+    }, 1000);
   }
 };
 
@@ -250,6 +272,7 @@ quiz.end = (outcome) => {
     score: quiz.correctAnswers.length,
     time: { ...quiz.time },
   };
+  if (outcome === "cheat") quiz.result.score = quiz.masterTotals.answers;
   quiz.form.removeEventListener("submit", quiz.handleSubmit);
   quiz.form.addEventListener("submit", (e) => e.preventDefault());
   quiz.giveUp.removeEventListener("click", () => quiz.end("giveUp"));
@@ -265,7 +288,7 @@ quiz.end = (outcome) => {
       once: true,
     });
   }
-  if (outcome === "win") {
+  if (outcome === "win" || outcome === "cheat") {
     // stop the timer
     clearInterval(quiz.timer);
     // window.alert("Well done, you got them all!");
@@ -335,6 +358,7 @@ quiz.funBorder = () => {
     legend.style.borderBottomColor = colors[2];
     legend.style.borderRightColor = colors[3];
   }, 1000);
+  quiz.siien.classList.add("animate-bounce");
 };
 
 // fly through each missed answer after quiz is complete
