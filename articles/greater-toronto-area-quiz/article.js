@@ -86,8 +86,8 @@ quiz.instructions = () => {
     <div>
       <h3>Quiz Instructions</h3>
       <ul class="text-xs">
-        <li class="mt-1">• When you’re ready, hit the “Start Quiz” button.</li>
-        <li class="mt-1">• Enter the name of each municipality in the text field in the main article window.</li>
+        <li class="mt-1">• When you’re ready, hit the “Start Quiz” button in the main article window.</li>
+        <li class="mt-1">• Enter the name of each municipality in the text field.</li>
         <li class="mt-1">• You will have three minutes to enter them all.</li>
       </ul>
     </div>
@@ -101,7 +101,7 @@ quiz.instructions = () => {
 // handles the user clicking the button during the quiz
 quiz.handleSubmit = (e) => {
   e.preventDefault();
-  quiz.guessLabel.innerText = "Nope, that ain't right.";
+  quiz.guessLabel.innerText = "Nope, that ain’t right.";
   quiz.userInput.value = "";
 };
 
@@ -256,7 +256,7 @@ quiz.end = (outcome) => {
   quiz.giveUp.innerText = "Reset Quiz";
   quiz.giveUp.addEventListener("click", quiz.reset);
   if (outcome === "lose") {
-    window.alert("Time's up!");
+    window.alert("Time’s up!");
     // show and lock in score
     quiz.guessLabel.innerText = "You can keep guessing...";
     // offer to reveal rest of answers
