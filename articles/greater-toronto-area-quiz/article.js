@@ -5,7 +5,8 @@ const quiz = {
     best: "You’re the Greater-est. Drake should write a song about you.", // 21–25 correct
     better: "Well played. You get the GTHA — just not, like, all of it.", // 11–20 correct
     worse: "Don’t feel so bad. The GTHA is a large and mysterious place.", // 1–10 correct
-    worst: "You didn’t even get “Toronto”?!", // 0 correct
+    worst:
+      "Which is weird, because “Toronto” and “Hamilton” are right there in the name.", // 0 correct
   },
   coordinates: {},
   correctAnswers: [],
@@ -335,7 +336,7 @@ quiz.resultLegend = () => {
   legendText.innerHTML = `
     <h3>Game Over</h3>
     <ul class="text-xs">
-      <li class="mt-1">You got ${score} out of ${quiz.answerList.length} municipalties with ${timeLeft}.</li>
+      <li class="mt-1">You got ${score} out of ${quiz.answerList.length} municipalities with ${timeLeft}.</li>
       <li class="mt-1">${comment}</li>
       <li class="mt-1">Thanks for playing!</li>
     </ul>
