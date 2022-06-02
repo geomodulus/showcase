@@ -87,8 +87,8 @@ quiz.instructions = () => {
     <div>
       <h3>Quiz Instructions</h3>
       <ul class="text-xs">
-        <li class="mt-1">• When you’re ready, hit the “Start Quiz” button.</li>
-        <li class="mt-1">• Enter the name of each municipality in the text field in the main article window.</li>
+        <li class="mt-1">• When you’re ready, hit the “Start Quiz” button in the main article window.</li>
+        <li class="mt-1">• Enter the name of each municipality in the text field.</li>
         <li class="mt-1">• You will have three minutes to enter them all.</li>
       </ul>
     </div>
