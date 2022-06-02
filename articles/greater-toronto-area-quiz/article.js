@@ -101,7 +101,7 @@ quiz.instructions = () => {
 // handles the user clicking the button during the quiz
 quiz.handleSubmit = (e) => {
   e.preventDefault();
-  quiz.guessLabel.innerText = "Nope, that ain’t right.";
+  quiz.guessLabel.innerText = "Nope, that ain't right.";
   quiz.userInput.value = "";
 };
 
@@ -256,7 +256,7 @@ quiz.end = (outcome) => {
   quiz.giveUp.innerText = "Reset Quiz";
   quiz.giveUp.addEventListener("click", quiz.reset);
   if (outcome === "lose") {
-    window.alert("Time’s up!");
+    window.alert("Time's up!");
     // show and lock in score
     quiz.guessLabel.innerText = "You can keep guessing...";
     // offer to reveal rest of answers
