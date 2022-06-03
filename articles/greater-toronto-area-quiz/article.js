@@ -191,20 +191,6 @@ quiz.startTimer = () => {
 // checks the guess against available answers
 quiz.checkGuess = () => {
   const guess = quiz.userInput.value.trim().toUpperCase();
-
-  // = = = = = * * * = = = = = //
-  // testing function, remove before production
-  if (guess === "STARTEDFROMTHEBOTTOM") {
-    quiz.userInput.value = "";
-    quiz.end("cheat");
-  }
-  if (guess === "HOSER") {
-    quiz.userInput.value = "";
-    clearInterval(quiz.timer);
-    quiz.end("lose");
-  }
-  // = = = = = * * * = = = = = //
-
   if (quiz.answerList.includes(guess)) {
     if (quiz.correctAnswers.includes(guess)) {
       quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.repeated);
@@ -302,7 +288,6 @@ quiz.end = (outcome) => {
     score: quiz.correctAnswers.length,
     time: { ...quiz.time },
   };
-  if (outcome === "cheat") quiz.result.score = quiz.masterTotals.answers;
 
   quiz.form.removeEventListener("submit", quiz.handleSubmit);
   quiz.form.addEventListener("submit", (e) => e.preventDefault());
@@ -310,7 +295,7 @@ quiz.end = (outcome) => {
   quiz.giveUp.innerText = "Reset Quiz";
   quiz.giveUp.addEventListener("click", quiz.reset);
 
-  if (outcome === "win" || outcome === "cheat") {
+  if (outcome === "win") {
     // stop the timer
     clearInterval(quiz.timer);
     quiz.guessLabel.innerText = "Well done, you got them all!";
