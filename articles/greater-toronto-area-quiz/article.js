@@ -1,13 +1,6 @@
 const quiz = {
   // establish objects for data
   answerList: [],
-  comments: {
-    best: "You’re the Greater-est. Drake should write a song about you.", // 21–25 correct
-    better: "Well played. You get the GTHA — just not, like, all of it.", // 11–20 correct
-    worse: "Don’t feel so bad. The GTHA is a large and mysterious place.", // 1–10 correct
-    worst:
-      "Which is weird, because “Toronto” and “Hamilton” are right there in the name.", // 0 correct
-  },
   coordinates: {},
   correctAnswers: [],
   missedAnswers: [],
@@ -23,13 +16,36 @@ const quiz = {
   },
 };
 
-/*
-Add arrays of comments to be used randomly for particular circumstances
-- right answer
-- repeated answer
-- wrong answer
-- encouraging if stuck
-*/
+quiz.comments = {
+  result: {
+    best: "You’re the Greater-est. Drake should write a song about you.", // 21–25 correct
+    better: "Well played. You get the GTHA — just not, like, all of it.", // 11–20 correct
+    worse: "Don’t feel so bad. The GTHA is a large and mysterious place.", // 1–10 correct
+    worst:
+      "Which is weird, because “Toronto” and “Hamilton” are right there in the name.", // 0 correct
+  },
+  correct: [
+    "Nice work, you got one!",
+    "Hey, you're good at this!",
+    "Been studying, huh?",
+    "That's a good one.",
+    "I'm so proud of you.",
+  ],
+  incorrect: [
+    "Nope, that ain't right.",
+    "Never heard of it.",
+    "Nice try bud.",
+    "Hmmm. Try again.",
+    "Are you from Toronto?",
+  ],
+  repeated: [
+    "Already got that one!",
+    "No points for doubles.",
+    "You're repeating yourself.",
+    "Heard you the first time.",
+    "Maybe try something different.",
+  ],
+};
 
 /* INITIALIZE QUIZ */
 
@@ -101,11 +117,16 @@ quiz.instructions = () => {
   quiz.siien = document.getElementById("siien");
 };
 
+quiz.getRandom = (array) => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
+};
+
 // handles the user clicking the button during the quiz
 quiz.handleSubmit = (e) => {
   e.preventDefault();
   quiz.animateSiien("turn");
-  quiz.guessLabel.innerText = "Nope, that ain't right.";
+  quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.incorrect);
   quiz.userInput.value = "";
 };
 
@@ -116,7 +137,7 @@ quiz.start = () => {
   // start timer
   quiz.startTimer();
   // enable input and give focus
-  quiz.userInput.classList.add("bg-gray-600");
+  // quiz.userInput.classList.add("bg-gray-800");
   quiz.userInput.disabled = false;
   quiz.userInput.focus();
 };
@@ -170,16 +191,23 @@ quiz.startTimer = () => {
 // checks the guess against available answers
 quiz.checkGuess = () => {
   const guess = quiz.userInput.value.trim().toUpperCase();
+
   // = = = = = * * * = = = = = //
   // testing function, remove before production
-  if (guess === "CHEAT") {
+  if (guess === "STARTEDFROMTHEBOTTOM") {
     quiz.userInput.value = "";
     quiz.end("cheat");
   }
+  if (guess === "HOSER") {
+    quiz.userInput.value = "";
+    clearInterval(quiz.timer);
+    quiz.end("lose");
+  }
   // = = = = = * * * = = = = = //
+
   if (quiz.answerList.includes(guess)) {
     if (quiz.correctAnswers.includes(guess)) {
-      quiz.guessLabel.innerText = "Already got that one!";
+      quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.repeated);
     } else quiz.correctGuess(guess);
     // reset user input
     quiz.userInput.value = "";
@@ -191,7 +219,7 @@ quiz.correctGuess = (answer) => {
   // add to array of correct answers
   quiz.correctAnswers.push(answer);
   // random list of encouragment? dependent on progress?
-  quiz.guessLabel.innerText = "Nice work, you got one!";
+  quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.correct);
   // add to total correct on screen & adjust var visual
   quiz.totalCorrect.textContent = quiz.correctAnswers.length;
   quiz.scoreBar.style.width = `${Math.round(
@@ -269,43 +297,45 @@ quiz.checkBarZindex = () => {
 
 // handles different end of quiz conditions
 quiz.end = (outcome) => {
+  // lock in score and time remaining
   quiz.result = {
     score: quiz.correctAnswers.length,
     time: { ...quiz.time },
   };
   if (outcome === "cheat") quiz.result.score = quiz.masterTotals.answers;
+
   quiz.form.removeEventListener("submit", quiz.handleSubmit);
   quiz.form.addEventListener("submit", (e) => e.preventDefault());
   quiz.giveUp.removeEventListener("click", () => quiz.end("giveUp"));
   quiz.giveUp.innerText = "Reset Quiz";
   quiz.giveUp.addEventListener("click", quiz.reset);
-  if (outcome === "lose") {
-    window.alert("Time's up!");
-    // show and lock in score
-    quiz.guessLabel.innerText = "You can keep guessing...";
-    // offer to reveal rest of answers
-    quiz.startButton.innerText = "Show Remaining";
-    quiz.startButton.addEventListener("click", quiz.showRemaining, {
-      once: true,
-    });
-  }
+
   if (outcome === "win" || outcome === "cheat") {
     // stop the timer
     clearInterval(quiz.timer);
-    // window.alert("Well done, you got them all!");
     quiz.guessLabel.innerText = "Well done, you got them all!";
     // prompt to share visual: 25/25 + time remaining (bars background?)
   }
+
   if (outcome === "giveUp") {
     // stop the timer
     clearInterval(quiz.timer);
     quiz.guessLabel.innerText = "Better luck next time!";
+  }
+
+  if (outcome === "lose") quiz.guessLabel.innerText = "Time's up!";
+
+  if (outcome === "lose" || outcome === "giveUp") {
+    quiz.startButton.focus();
+    quiz.userInput.value = "";
+    quiz.userInput.placeholder = "keep guessing...";
     // offer to reveal rest of answers
     quiz.startButton.innerText = "Show Remaining";
     quiz.startButton.addEventListener("click", quiz.showRemaining, {
       once: true,
     });
   }
+  // show result and comment
   quiz.resultLegend();
 };
 
@@ -324,12 +354,12 @@ quiz.resultLegend = () => {
       time.seconds > 9 ? time.seconds : `0${time.seconds}`
     } remaining`;
   }
-  let comment = quiz.comments.worst;
-  if (score > 0) comment = quiz.comments.worse;
-  if (score > 10) comment = quiz.comments.better;
+  let comment = quiz.comments.result.worst;
+  if (score > 0) comment = quiz.comments.result.worse;
+  if (score > 10) comment = quiz.comments.result.better;
   if (score > 20) {
-    comment = quiz.comments.best;
-    quiz.funBorder();
+    comment = quiz.comments.result.best;
+    quiz.highScore();
   }
 
   // replace with score and comment
@@ -344,7 +374,7 @@ quiz.resultLegend = () => {
 };
 
 // make it look fun and exciting
-quiz.funBorder = () => {
+quiz.highScore = () => {
   const legend = document.getElementById("legend");
   const colors = ["#7C3AED", "#00B073", "#00C1D4", "#EB6894"];
   legend.style.borderTopColor = colors[0];
