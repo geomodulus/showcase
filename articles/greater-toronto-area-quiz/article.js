@@ -79,6 +79,18 @@ quiz.init = () => {
     },
     { once: true }
   );
+  // remove timeouts on article close
+  window.addEventListener(
+    "flexWindowReset",
+    () => {
+      if (quiz.timeouts) {
+        for (const municipality in quiz.timeouts) {
+          clearTimeout(quiz.timeouts[municipality]);
+        }
+      }
+    },
+    { once: true }
+  );
 
   // add instructions to legend
   quiz.instructions();
