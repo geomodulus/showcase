@@ -25,24 +25,24 @@ quiz.comments = {
       "Which is weird, because “Toronto” and “Hamilton” are right there in the name.", // 0 correct
   },
   correct: [
-    "Nice work, you got one!",
+    "Nice work — you got one!",
     "Hey, you're good at this!",
     "Been studying, huh?",
     "That's a good one.",
-    "I'm so proud of you.",
+    "Bingo.",
   ],
   incorrect: [
     "Nope, that ain't right.",
     "Never heard of it.",
-    "Nice try bud.",
-    "Hmmm. Try again.",
-    "Are you from Toronto?",
+    "Sorry, try again.",
+    "Afraid not.",
+    "It sounded right, but no.",
   ],
   repeated: [
     "Already got that one!",
     "No points for doubles.",
     "You're repeating yourself.",
-    "Heard you the first time.",
+    "It's nice, but you named it twice.",
     "Maybe try something different.",
   ],
 };
