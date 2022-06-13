@@ -125,7 +125,6 @@ quiz.instructions = () => {
   legend.appendChild(legendBody);
   // add legend to page
   module.addToLegend(legend);
-  module.showLegend();
   quiz.siien = document.getElementById("siien");
 };
 
