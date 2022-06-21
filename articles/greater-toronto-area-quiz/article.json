@@ -3,7 +3,7 @@
   "display_name": "The great Greater Toronto and Hamilton Area municipality quiz",
   "h2": "How many GTHA municipalities can you name in three minutes?",
   "img_url": "https://media.geomodul.us/img/GTA-highway.jpg",
-  "author": "Torontoverse Staff",
+  "authors": ["Torontoverse Staff"],
   "pub_date": "2022-06-07",
   "code_credit": "Kyle Duncan",
   "loc": { "lng": -79.3217, "lat": 43.7637 },
