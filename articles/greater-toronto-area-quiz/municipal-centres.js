@@ -6,9 +6,20 @@ const layout = {
     { "font-scale": 2 },
   ],
   "text-font": ["JetBrains Mono Regular"],
-  "text-size": ["interpolate", ["linear"], ["zoom"], 11, 12, 12.5, 15, 14, 20],
-  "text-ignore-placement": true,
-  "text-allow-overlap": true,
+  "text-size": [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    8,
+    9,
+    10,
+    12,
+    12,
+    15,
+    14,
+    18,
+  ],
+  // "text-allow-overlap": true,
 };
 
 function addLayers() {
@@ -20,7 +31,6 @@ function addLayers() {
     layout: layout,
     paint: {
       "text-color": "#A77BF5", // purple
-      "text-opacity": 0.8,
     },
   });
   module.addFeatureLayer({
@@ -31,7 +41,6 @@ function addLayers() {
     layout: layout,
     paint: {
       "text-color": "#EA737C", // red
-      "text-opacity": 0.8,
     },
   });
 }

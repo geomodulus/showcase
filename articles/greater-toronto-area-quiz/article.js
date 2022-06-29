@@ -1,8 +1,29 @@
+function isMobile() {
+  if (window.innerWidth < 1024) return true;
+  else if (window.innerWidth >= 1024) return false;
+  else return `Width not determined: ${window.innerWidth}`;
+}
+
+if (isMobile()) module.map.setMinZoom(7.5);
+else module.map.setMinZoom(9);
+
+setTimeout(() => {
+  if (isMobile()) {
+    module.map.easeTo({
+      center: [-79.482, 43.788],
+      duration: 1500,
+      zoom: 8,
+    });
+  }
+}, 0);
+
 const quiz = {
   // establish objects for data
   answerList: [],
+  borderBox: {},
   coordinates: {},
   correctAnswers: [],
+  giveUp: () => quiz.end("giveUp"),
   missedAnswers: [],
   time: {
     minutes: 3,
@@ -52,12 +73,15 @@ quiz.comments = {
 quiz.init = () => {
   // grab visual elements
   quiz.form = document.querySelector("form.quiz");
-  quiz.giveUp = document.getElementById("giveUp");
-  quiz.guessLabel = document.getElementById("guessLabel");
+  quiz.endButton = document.getElementById("giveUp");
+  quiz.siienComment = document.getElementById("commentText");
   quiz.minutes = document.getElementById("minutes");
   quiz.scoreBar = document.getElementById("scoreBar");
   quiz.seconds = document.getElementById("seconds");
+  quiz.siien = document.getElementById("siien");
   quiz.startButton = document.getElementById("startQuiz");
+  quiz.takeQuizBttn = document.getElementById("takeQuiz");
+  quiz.exitQuizBttn = document.getElementById("exitQuiz");
   quiz.timeBar = document.getElementById("timeBar");
   quiz.totalAnswers = document.getElementById("totalAnswers");
   quiz.totalCorrect = document.getElementById("correct");
@@ -68,7 +92,7 @@ quiz.init = () => {
   // listen for user gueses
   quiz.userInput.addEventListener("input", quiz.checkGuess);
   // listen for the user giving up
-  quiz.giveUp.addEventListener("click", () => quiz.end("giveUp"));
+  quiz.endButton.addEventListener("click", quiz.giveUp);
   // allow the user to start the quiz
   quiz.startButton.addEventListener(
     "click",
@@ -79,6 +103,16 @@ quiz.init = () => {
     },
     { once: true }
   );
+  // allow hiding the intro and show quix
+  quiz.takeQuizBttn.addEventListener("click", () => {
+    document.getElementById("quizClosed").classList.add("hidden");
+    document.getElementById("quizOpen").classList.remove("hidden");
+  });
+  // allow hiding the intro and show quix
+  quiz.exitQuizBttn.addEventListener("click", () => {
+    document.getElementById("quizClosed").classList.remove("hidden");
+    document.getElementById("quizOpen").classList.add("hidden");
+  });
   // remove timeouts on article close
   window.addEventListener(
     "flexWindowReset",
@@ -91,41 +125,6 @@ quiz.init = () => {
     },
     { once: true }
   );
-
-  // add instructions to legend
-  quiz.instructions();
-};
-
-quiz.instructions = () => {
-  // build legend element
-  const legend = document.createElement("div");
-  legend.className =
-    "bg-gray-800 border-2 flex flex-row p-2 shadow-window transition duration-1000 w-[536px]";
-  legend.id = "legend";
-
-  const siien = document.createElement("img");
-  siien.className = "h-[116px] transition duration-700";
-  siien.id = "siien";
-  siien.src =
-    "https://media.geomodul.us/articles/municipal-quiz/cnTower-no-bg.png";
-  legend.appendChild(siien);
-
-  const legendBody = document.createElement("div");
-  legendBody.className = "m-2 text-sm";
-  legendBody.innerHTML = `
-    <div>
-      <h3>Quiz Instructions</h3>
-      <ul class="text-xs">
-        <li class="mt-1">• When you’re ready, hit the “Start Quiz” button in the main article window.</li>
-        <li class="mt-1">• Enter the name of each municipality in the text field.</li>
-        <li class="mt-1">• You will have three minutes to enter them all.</li>
-      </ul>
-    </div>
-  `;
-  legend.appendChild(legendBody);
-  // add legend to page
-  module.addToLegend(legend);
-  quiz.siien = document.getElementById("siien");
 };
 
 quiz.getRandom = (array) => {
@@ -137,7 +136,7 @@ quiz.getRandom = (array) => {
 quiz.handleSubmit = (e) => {
   e.preventDefault();
   quiz.animateSiien("turn");
-  quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.incorrect);
+  quiz.siienComment.innerText = quiz.getRandom(quiz.comments.incorrect);
   quiz.userInput.value = "";
 };
 
@@ -148,7 +147,7 @@ quiz.start = () => {
   // start timer
   quiz.startTimer();
   // enable input and give focus
-  // quiz.userInput.classList.add("bg-gray-800");
+  quiz.siienComment.innerText = "Go!";
   quiz.userInput.disabled = false;
   quiz.userInput.focus();
 };
@@ -162,9 +161,13 @@ quiz.buildData = () => {
     const sourceData = module.map.getSource("municipal-centres");
     sourceData._data.features.forEach((centre) => {
       quiz.answerList.push(centre.properties.MUNICIPAL_NAME_SHORTFORM);
+
       quiz.coordinates[centre.properties.MUNICIPAL_NAME_SHORTFORM] =
         centre.geometry.coordinates;
+      quiz.borderBox[centre.properties.MUNICIPAL_NAME_SHORTFORM] =
+        centre.properties._bbox;
     });
+    quiz.answerList.sort();
   }
   quiz.masterTotals = {
     answers: quiz.answerList.length,
@@ -204,7 +207,7 @@ quiz.checkGuess = () => {
   const guess = quiz.userInput.value.trim().toUpperCase();
   if (quiz.answerList.includes(guess)) {
     if (quiz.correctAnswers.includes(guess)) {
-      quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.repeated);
+      quiz.siienComment.innerText = quiz.getRandom(quiz.comments.repeated);
     } else quiz.correctGuess(guess);
     // reset user input
     quiz.userInput.value = "";
@@ -216,7 +219,7 @@ quiz.correctGuess = (answer) => {
   // add to array of correct answers
   quiz.correctAnswers.push(answer);
   // random list of encouragment? dependent on progress?
-  quiz.guessLabel.innerText = quiz.getRandom(quiz.comments.correct);
+  quiz.siienComment.innerText = quiz.getRandom(quiz.comments.correct);
   // add to total correct on screen & adjust var visual
   quiz.totalCorrect.textContent = quiz.correctAnswers.length;
   quiz.scoreBar.style.width = `${Math.round(
@@ -250,13 +253,21 @@ quiz.animateSiien = (animation) => {
 
 quiz.revealAnswer = (answer) => {
   // fly to region, reveal
-  module.map
-    .easeTo({
+  if (isMobile()) {
+    const bearing = module.map.getBearing();
+    module.map.fitBounds(quiz.borderBox[answer], {
+      bearing: bearing,
+      duration: 1500,
+      linear: true,
+    });
+  } else {
+    module.map.easeTo({
       center: quiz.coordinates[answer],
       duration: 1500,
-      offset: [-150, 0],
-      zoom: 5,
-    })
+      zoom: 10,
+    });
+  }
+  module.map
     .setFilter("boundary-fills", quiz.getFilter("fill"))
     // add label with region name
     .setFilter("labels", quiz.getFilter("label"));
@@ -302,29 +313,30 @@ quiz.end = (outcome) => {
 
   quiz.form.removeEventListener("submit", quiz.handleSubmit);
   quiz.form.addEventListener("submit", (e) => e.preventDefault());
-  quiz.giveUp.removeEventListener("click", () => quiz.end("giveUp"));
-  quiz.giveUp.innerText = "Reset Quiz";
-  quiz.giveUp.addEventListener("click", quiz.reset);
+  quiz.endButton.removeEventListener("click", quiz.giveUp);
+  quiz.endButton.innerText = "Reset Quiz";
+  quiz.endButton.addEventListener("click", quiz.reset);
 
   if (outcome === "win") {
     // stop the timer
     clearInterval(quiz.timer);
-    quiz.guessLabel.innerText = "Well done, you got them all!";
+    quiz.siienComment.innerText = "Well done, you got them all!";
     // prompt to share visual: 25/25 + time remaining (bars background?)
   }
 
   if (outcome === "giveUp") {
     // stop the timer
     clearInterval(quiz.timer);
-    quiz.guessLabel.innerText = "Better luck next time!";
+    quiz.siienComment.innerText =
+      "Better luck next time! Keep guessing if you like.";
   }
 
-  if (outcome === "lose") quiz.guessLabel.innerText = "Time's up!";
+  if (outcome === "lose")
+    quiz.siienComment.innerText = "Time's up! Keep guessing if you like.";
 
   if (outcome === "lose" || outcome === "giveUp") {
     quiz.startButton.focus();
     quiz.userInput.value = "";
-    quiz.userInput.placeholder = "keep guessing...";
     // offer to reveal rest of answers
     quiz.startButton.innerText = "Show Remaining";
     quiz.startButton.addEventListener("click", quiz.showRemaining, {
@@ -332,14 +344,11 @@ quiz.end = (outcome) => {
     });
   }
   // show result and comment
-  quiz.resultLegend();
+  quiz.showResult();
 };
 
-// replace legend with result and comment (to share?)
-quiz.resultLegend = () => {
-  // grab legend element
-  const legendText = document.getElementById("legend").children[1];
-
+// show result and comment (to share?)
+quiz.showResult = () => {
   // compile result info
   const { score, time } = quiz.result;
   let timeLeft;
@@ -359,38 +368,41 @@ quiz.resultLegend = () => {
   }
 
   // replace with score and comment
-  legendText.innerHTML = `
-    <h3>Game Over</h3>
-    <ul class="text-xs">
-      <li class="mt-1">You got ${score} out of ${quiz.answerList.length} municipalities with ${timeLeft}.</li>
-      <li class="mt-1">${comment}</li>
-      <li class="mt-1">Thanks for playing!</li>
-    </ul>
-  `;
+  const results = [
+    // "Game Over!",
+    `You got ${score} out of ${quiz.answerList.length} municipalities with ${timeLeft}.`,
+    comment,
+    "Thanks for playing!",
+  ];
+  quiz.resultScroll = setInterval(() => {
+    quiz.siienComment.innerText = results[0];
+    results.push(results[0]);
+    results.shift();
+  }, 2500);
 };
 
 // make it look fun and exciting
 quiz.highScore = () => {
-  const legend = document.getElementById("legend");
+  const siienBox = document.getElementById("siienBox");
   const colors = ["#7C3AED", "#00B073", "#00C1D4", "#EB6894"];
-  legend.style.borderTopColor = colors[0];
-  legend.style.borderLeftColor = colors[1];
-  legend.style.borderBottomColor = colors[2];
-  legend.style.borderRightColor = colors[3];
+  siienBox.style.borderTopColor = colors[0];
+  siienBox.style.borderLeftColor = colors[1];
+  siienBox.style.borderBottomColor = colors[2];
+  siienBox.style.borderRightColor = colors[3];
   quiz.rainbow = setInterval(() => {
     colors.push(colors[0]);
     colors.shift();
-    legend.style.borderTopColor = colors[0];
-    legend.style.borderLeftColor = colors[1];
-    legend.style.borderBottomColor = colors[2];
-    legend.style.borderRightColor = colors[3];
+    siienBox.style.borderTopColor = colors[0];
+    siienBox.style.borderLeftColor = colors[1];
+    siienBox.style.borderBottomColor = colors[2];
+    siienBox.style.borderRightColor = colors[3];
   }, 1000);
   quiz.siien.classList.add("animate-bounce");
 };
 
 // fly through each missed answer after quiz is complete
 quiz.showRemaining = () => {
-  quiz.guessLabel.innerText = "Here's what you missed...";
+  quiz.siienComment.innerText = "Here's what you missed...";
   const remaining = quiz.answerList.filter(
     (municipality) => !quiz.correctAnswers.includes(municipality)
   );
@@ -406,13 +418,21 @@ quiz.showRemaining = () => {
 
 quiz.revealMissed = (answer) => {
   // fly to region, reveal
-  module.map
-    .easeTo({
+  if (isMobile()) {
+    const bearing = module.map.getBearing();
+    module.map.fitBounds(quiz.borderBox[answer], {
+      bearing: bearing,
+      duration: 1500,
+      linear: true,
+    });
+  } else {
+    module.map.easeTo({
       center: quiz.coordinates[answer],
       duration: 1500,
-      offset: [-150, 0],
-      zoom: 5,
-    })
+      zoom: 10,
+    });
+  }
+  module.map
     .setFilter("boundary-fills", quiz.getMissedFilter("fill"))
     // add label with region name
     .setFilter("missedLabels", quiz.getMissedFilter("label"));
@@ -446,6 +466,11 @@ quiz.reset = () => {
     }
   }
 
+  if (quiz.rainbow) {
+    clearInterval(quiz.rainbow);
+    quiz.siien.classList.remove("animate-bounce");
+  }
+
   clearInterval(quiz.timer);
   quiz.correctAnswers = [];
   quiz.missedAnswers = [];
@@ -462,9 +487,10 @@ quiz.reset = () => {
     .setFilter("missedLabels", quiz.getFilter("label"));
 
   // reset buttons elements (innerText)
-  quiz.guessLabel.innerText = "Enter guesses below";
+  clearInterval(quiz.resultScroll);
+  quiz.siienComment.innerText = "I'm feeling lucky this time";
   quiz.startButton.innerText = "Start Quiz";
-  quiz.giveUp.innerText = "Give Up";
+  quiz.endButton.innerText = "Give Up";
 
   // reset button triggers
   quiz.startButton.removeEventListener("click", quiz.showRemaining);
@@ -477,8 +503,8 @@ quiz.reset = () => {
     },
     { once: true }
   );
-  quiz.giveUp.removeEventListener("click", quiz.reset);
-  quiz.giveUp.addEventListener("click", () => quiz.end("giveUp"));
+  quiz.endButton.removeEventListener("click", quiz.reset);
+  quiz.endButton.addEventListener("click", quiz.giveUp);
   quiz.form.removeEventListener("submit", (e) => e.preventDefault());
   quiz.form.addEventListener("submit", quiz.handleSubmit);
 
@@ -490,11 +516,6 @@ quiz.reset = () => {
   quiz.totalCorrect.textContent = quiz.correctAnswers.length;
   quiz.scoreBar.style.width = "0%";
   quiz.checkBarZindex();
-
-  // return instructions to legend
-  const legend = document.getElementById("legend");
-  legend.remove();
-  quiz.instructions();
 };
 
 /* EXECUTE QUIZ */
