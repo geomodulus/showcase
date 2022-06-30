@@ -27,7 +27,7 @@
   <p>Take the Torontoverse quiz to find out!</p>
 </section>
 
-<section>
+<section class="flex flex-col" id="quizSection">
   <!-- Siien and response comments -->
   <div
     class="bg-gray-800 border flex p-2 transition duration-1000 w-full"
@@ -46,9 +46,10 @@
       </p>
     </div>
   </div>
+
   <!-- Bar graph visual -->
   <div
-    class="flex flex-row items-center h-6 justify-evenly mt-2 relative text-sm w-full"
+    class="flex flex-row items-center h-6 justify-evenly my-2 relative text-sm w-full"
   >
     <div
       class="absolute bg-[#00B073] duration-500 ease-linear h-6 left-0 top-0 transition-[width] w-full"
@@ -65,6 +66,7 @@
       <span id="correct">0</span> / <span id="totalAnswers">26</span>
     </p>
   </div>
+
   <form class="quiz m-2 text-center">
     <!-- User input -->
     <div class="flex my-2 w-full items-center">

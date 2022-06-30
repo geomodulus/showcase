@@ -81,10 +81,16 @@ quiz.init = () => {
   quiz.siien = document.getElementById("siien");
   quiz.startButton = document.getElementById("startQuiz");
   quiz.introSection = document.getElementById("introduction");
+  quiz.quizSection = document.getElementById("quizSection");
   quiz.timeBar = document.getElementById("timeBar");
   quiz.totalAnswers = document.getElementById("totalAnswers");
   quiz.totalCorrect = document.getElementById("correct");
   quiz.userInput = document.getElementById("guesses");
+
+  if (isMobile()) {
+    quiz.quizSection.classList.add("flex-col-reverse");
+    quiz.quizSection.classList.remove("flex-col");
+  }
 
   // handle submit in form element
   quiz.form.addEventListener("submit", quiz.handleSubmit);
