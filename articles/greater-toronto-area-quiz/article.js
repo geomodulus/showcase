@@ -80,8 +80,7 @@ quiz.init = () => {
   quiz.seconds = document.getElementById("seconds");
   quiz.siien = document.getElementById("siien");
   quiz.startButton = document.getElementById("startQuiz");
-  quiz.takeQuizBttn = document.getElementById("takeQuiz");
-  quiz.exitQuizBttn = document.getElementById("exitQuiz");
+  quiz.introSection = document.getElementById("introduction");
   quiz.timeBar = document.getElementById("timeBar");
   quiz.totalAnswers = document.getElementById("totalAnswers");
   quiz.totalCorrect = document.getElementById("correct");
@@ -103,16 +102,6 @@ quiz.init = () => {
     },
     { once: true }
   );
-  // allow hiding the intro and show quix
-  quiz.takeQuizBttn.addEventListener("click", () => {
-    document.getElementById("quizClosed").classList.add("hidden");
-    document.getElementById("quizOpen").classList.remove("hidden");
-  });
-  // allow hiding the intro and show quix
-  quiz.exitQuizBttn.addEventListener("click", () => {
-    document.getElementById("quizClosed").classList.remove("hidden");
-    document.getElementById("quizOpen").classList.add("hidden");
-  });
   // remove timeouts on article close
   window.addEventListener(
     "flexWindowReset",
@@ -142,6 +131,7 @@ quiz.handleSubmit = (e) => {
 
 // starts the quiz
 quiz.start = () => {
+  if (isMobile()) quiz.introSection.classList.add("hidden");
   // build quiz data
   quiz.buildData();
   // start timer
@@ -488,7 +478,7 @@ quiz.reset = () => {
 
   // reset buttons elements (innerText)
   clearInterval(quiz.resultScroll);
-  quiz.siienComment.innerText = "I'm feeling lucky this time";
+  quiz.siienComment.innerText = "Click 'Start Quiz' to begin. Good luck!";
   quiz.startButton.innerText = "Start Quiz";
   quiz.endButton.innerText = "Give Up";
 
