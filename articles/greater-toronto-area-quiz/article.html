@@ -1,4 +1,4 @@
-<section id="quizClosed">
+<section id="introduction">
   <figure>
     <img
       src="https://media.geomodul.us/img/GTA-highway.jpg"
@@ -25,24 +25,9 @@
     many of them can you name?
   </p>
   <p>Take the Torontoverse quiz to find out!</p>
-
-  <div class="bg-gray-800 pb-1 px-2">
-    <h3>Quiz Instructions</h3>
-    <ul class="mx-2">
-      <li>When you’re ready, hit the “Start Quiz” button below.</li>
-      <li>Enter the name of each municipality in the text field.</li>
-      <li>You will have three minutes to enter them all.</li>
-    </ul>
-  </div>
-
-  <div class="flex justify-center mt-4">
-    <button class="box-padding-button button-raised" id="takeQuiz">
-      Take the Quiz!
-    </button>
-  </div>
 </section>
 
-<section class="hidden" id="quizOpen">
+<section>
   <!-- Siien and response comments -->
   <div
     class="bg-gray-800 border flex p-2 transition duration-1000 w-full"
@@ -55,8 +40,9 @@
       id="siien"
     />
     <div class="flex flex-col justify-center" id="commentContainer">
-      <p class="text-base" id="commentText">
-        Click "Start Timer" to begin. Good luck!
+      <p class="text-sm" id="commentText">
+        Click “Start Timer" to begin, then enter municipalities one by one. Good
+        luck!
       </p>
     </div>
   </div>
@@ -76,7 +62,7 @@
       Time Left: <span id="minutes">3</span>:<span id="seconds">00</span>
     </p>
     <p class="mb-0 text-sm z-10">
-      <span id="correct">0</span> / <span id="totalAnswers">??</span>
+      <span id="correct">0</span> / <span id="totalAnswers">26</span>
     </p>
   </div>
   <form class="quiz m-2 text-center">
@@ -116,10 +102,4 @@
       </button>
     </div>
   </form>
-  <!-- back to instructions -->
-  <div class="flex justify-center mt-4 text-sm">
-    <button class="box-padding-button button-raised" id="exitQuiz">
-      Instructions
-    </button>
-  </div>
 </section>
