@@ -213,7 +213,7 @@ quiz.correctGuess = (answer) => {
   // add to total correct on screen & adjust var visual
   quiz.totalCorrect.textContent = quiz.correctAnswers.length;
   quiz.scoreBar.style.width = `${Math.round(
-    (quiz.correctAnswers.length / 25) * 100
+    (quiz.correctAnswers.length / quiz.masterTotals.answers) * 100
   )}%`;
   quiz.checkBarZindex();
   quiz.revealAnswer(answer);
