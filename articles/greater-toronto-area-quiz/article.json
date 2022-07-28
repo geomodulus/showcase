@@ -9,7 +9,7 @@
   "code_credit": "Kyle Duncan",
   "promo_start": "2022-04-19T10:30:00-05:00",
   "promo_until": "2022-09-30T12:00:00-05:00",
-  "promo_wait": "5m",
+  "promo_wait": "10m",
   "loc": { "lng": -79.3217, "lat": 43.7637 },
   "zoom": 5,
   "geojson_datasets": [
