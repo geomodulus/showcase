@@ -1,12 +1,12 @@
 {
   "id": "a06e844e-0dd6-11ed-861d-0242ac120002",
-  "display_name": "How far did each Raptor travel in win/loss over/to Pistons?",
-  "h2": "TK.",
+  "display_name": "How far did each Raptor travel versus the Atlanta Hawks?",
+  "h2": "We mapped NBA player-tracking data on the streets of Toronto. You know, for fun.",
   "img_url": "https://media.geomodul.us/img/ontario-place-bumper-boats.jpg",
   "categories": ["Basketball"],
   "authors": ["Craig Battle"],
-  "pub_date": "2022-10-20",
-  "code_credit": "Chris Dinn",
+  "pub_date": "2022-11-01",
+  "code_credit": "Kyle Duncan",
   "loc": { "lng": -79.37909871897295, "lat": 43.64347676751884 },
   "zoom": 16
 }
