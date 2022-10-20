@@ -1,7 +1,7 @@
 {
   "id": "a06e844e-0dd6-11ed-861d-0242ac120002",
-  "display_name": "How far did each Raptor travel versus the Atlanta Hawks?",
-  "h2": "We mapped NBA player-tracking data on the streets of Toronto. You know, for fun.",
+  "display_name": "How far did each Raptor actually travel when playing the Atlanta Hawks?",
+  "h2": "We overlaid the streets of Toronto with NBA player-tracking data. You know, for fun.",
   "img_url": "https://media.geomodul.us/img/ontario-place-bumper-boats.jpg",
   "categories": ["Basketball"],
   "authors": ["Craig Battle"],
