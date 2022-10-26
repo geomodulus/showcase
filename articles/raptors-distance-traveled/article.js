@@ -12,15 +12,17 @@ const routes = {};
 function addRoutePoint(id) {
   const next = routes[id].coordinates.shift();
   routes[id].geometry.coordinates.push(next);
+  module.map.getSource(`${id}-symbol`).setData({
+    type: "Point",
+    coordinates: next,
+  });
   return routes[id].geometry;
 }
 
 function animateRoute(id) {
   if (routes[id].coordinates.length > 0) {
     module.map.getSource(id).setData(addRoutePoint(id));
-    // setTimeout(() => {
     requestAnimationFrame(() => animateRoute(id));
-    // }, 100);
   }
 }
 
@@ -51,6 +53,8 @@ function showDestinationPopup(e) {
 }
 
 function addDestinations() {
+  // group into once source/layer?
+  // use border box to establish zoom
   for (const player in routes) {
     module.addSource(`${player}-destination`, {
       data: routes[player].destination.poi,
@@ -61,9 +65,11 @@ function addDestinations() {
       source: `${player}-destination`,
       type: "circle",
       paint: {
-        "circle-color": "#ED3242",
-        "circle-opacity": 0.75,
+        "circle-opacity": 0,
         "circle-radius": 10,
+        "circle-stroke-color": "#FFF",
+        "circle-stroke-opacity": 0.75,
+        "circle-stroke-width": 3,
       },
     });
     const trigger = window.innerWidth < 1024 ? "click" : "mouseover";
@@ -82,13 +88,60 @@ function mapRoutes() {
       source: player,
       type: "line",
       paint: {
-        "line-color": "#FFF",
-        "line-opacity": 0.5,
-        "line-width": 5,
+        "line-color": "#ED3242",
+        "line-opacity": 0.25,
+        "line-width": 2,
+      },
+    });
+    module.addSource(`${player}-symbol`, {
+      type: "geojson",
+      data: {
+        type: "Point",
+        coordinates: [arena.lng, arena.lat],
+      },
+    });
+    module.addFeatureLayer({
+      id: `${player}-symbol`,
+      source: `${player}-symbol`,
+      type: "symbol",
+      layout: {
+        "icon-allow-overlap": true,
+        "icon-image": "orange-bball",
+        "icon-size": 0.5,
       },
     });
     // module.on("mouseover", player, (e) => console.log(e.features[0]));
     animateRoute(player);
+  }
+}
+
+function smooth(array) {
+  const smoothed = [...array];
+  for (let i = 0; i + 1 < smoothed.length; i++) {
+    function addMidpoint() {
+      const midpoint = turf.midpoint(
+        turf.point(smoothed[i]),
+        turf.point(smoothed[i + 1])
+      );
+      smoothed.splice(i + 1, 0, midpoint.geometry.coordinates);
+      checkDistance();
+    }
+    function checkDistance() {
+      const d = turf.distance(
+        turf.point(smoothed[i]),
+        turf.point(smoothed[i + 1])
+      );
+      if (d > 0.1) addMidpoint();
+    }
+    checkDistance();
+  }
+  return smoothed;
+}
+
+function addPoints() {
+  for (const player in routes) {
+    const smoothed = smooth(routes[player].coordinates);
+    routes[player].coordinates = smoothed;
   }
 }
 
@@ -115,8 +168,14 @@ function findMatches(distances) {
     };
     routes[id].geometry.coordinates = [];
   });
-  mapRoutes();
+  for (const player in routes) {
+    const smoothed = smooth(routes[player].coordinates);
+    routes[player].coordinates = smoothed;
+  }
   addDestinations();
+  setTimeout(() => {
+    module.map.once("idle", mapRoutes);
+  }, 500);
 }
 
 function getDistances() {
@@ -152,6 +211,13 @@ function getDestinations(features) {
   });
 }
 
+if (!module.map.hasImage("orange-bball")) {
+  module.map.loadImage("/kduncan/basketball-fill.png", (error, image) => {
+    if (error) console.log("Error loading image", error);
+    module.map.addImage("orange-bball", image);
+  });
+}
+
 const poi = module.map.getSource("places-of-interest");
 setTimeout(() => {
   if (poi._data.features.length) getDestinations(poi._data.features);
@@ -162,9 +228,9 @@ setTimeout(() => {
 }, 500);
 
 if (window.innerWidth > 1023) {
-  setTimeout(() => {
+  module.map.once("idle", () => {
     module.map.easeTo({
       zoom: 12.5,
     });
-  }, 2000);
+  });
 }
