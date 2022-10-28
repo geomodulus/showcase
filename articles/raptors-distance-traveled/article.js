@@ -79,8 +79,9 @@ function addDestinations() {
 
 function mapRoutes() {
   for (const player in routes) {
+    const { geometry, image } = routes[player];
     module.addSource(player, {
-      data: routes[player].geometry,
+      data: geometry,
       type: "geojson",
     });
     module.addFeatureLayer({
@@ -100,15 +101,18 @@ function mapRoutes() {
         coordinates: [arena.lng, arena.lat],
       },
     });
-    module.addFeatureLayer({
+    module.addVizLayer({
       id: `${player}-symbol`,
       source: `${player}-symbol`,
       type: "symbol",
       layout: {
         "icon-allow-overlap": true,
-        "icon-image": "orange-bball",
-        "icon-size": 0.5,
+        "icon-image": image ? image : "orange-bball",
+        "icon-size": image ? 0.2 : 0.5,
       },
+      // paint: {
+      //   "icon-opacity": image ? 0.75 : 0.85,
+      // }
     });
     // module.on("mouseover", player, (e) => console.log(e.features[0]));
     animateRoute(player);
@@ -152,30 +156,47 @@ function findMatches(distances) {
     return a.route.routes[0].distance - b.route.routes[0].distance;
   });
   distances.data.forEach((player) => {
-    const meters = player.distance * 1609.344;
-    const destination = destinations.find(
-      (poi) => poi.route.routes[0].distance > meters
-    );
-    const id = player.name.replaceAll(" ", "-");
-    const km = (meters / 1000).toFixed(2);
-    // console.log(id, "ran", km, "km to", destination.poi.properties.name);
-    routes[id] = {
-      coordinates: [...destination.route.routes[0].geometry.coordinates],
-      destination: destination,
-      geometry: { ...destination.route.routes[0].geometry },
-      kilometers: km,
-      player: player.name,
-    };
-    routes[id].geometry.coordinates = [];
+    if (player.distance > 0) {
+      const meters = player.distance * 1609.344;
+      const destination = destinations.find(
+        (poi) => poi.route.routes[0].distance > meters // remove from available list once assigned to a player (no repeats)
+      );
+      const id = player.name.replaceAll(" ", "-");
+      const km = (meters / 1000).toFixed(2);
+      console.log(id, "ran", km, "km to", destination.poi.properties.name);
+      routes[id] = {
+        coordinates: [...destination.route.routes[0].geometry.coordinates],
+        destination: destination,
+        geometry: { ...destination.route.routes[0].geometry },
+        kilometers: km,
+        player: player.name,
+      };
+      if (player.image) routes[id].image = player.image;
+      routes[id].geometry.coordinates = [];
+    }
   });
   for (const player in routes) {
     const smoothed = smooth(routes[player].coordinates);
     routes[player].coordinates = smoothed;
   }
   addDestinations();
-  setTimeout(() => {
-    module.map.once("idle", mapRoutes);
-  }, 500);
+  // setTimeout(() => {
+  module.map.once("idle", mapRoutes);
+  // }, 500);
+}
+
+function addImages(data) {
+  data.forEach((player) => {
+    if (player.image && !module.map.hasImage(player.image)) {
+      module.map.loadImage(
+        `https://media.geomodul.us/img/raptor-heads/${player.image}.png`,
+        (error, image) => {
+          if (error) console.log("Error loading image", error);
+          module.map.addImage(player.image, image);
+        }
+      );
+    }
+  });
 }
 
 function getDistances() {
@@ -184,6 +205,7 @@ function getDistances() {
   )
     .then((r) => r.json())
     .then((d) => {
+      addImages(d.data);
       findMatches(d);
     })
     .catch((e) => console.log("error:", e));
@@ -212,10 +234,13 @@ function getDestinations(features) {
 }
 
 if (!module.map.hasImage("orange-bball")) {
-  module.map.loadImage("/kduncan/basketball-fill.png", (error, image) => {
-    if (error) console.log("Error loading image", error);
-    module.map.addImage("orange-bball", image);
-  });
+  module.map.loadImage(
+    "https://media.geomodul.us/img/raptor-heads/basketball-fill.png",
+    (error, image) => {
+      if (error) console.log("Error loading image", error);
+      module.map.addImage("orange-bball", image);
+    }
+  );
 }
 
 const poi = module.map.getSource("places-of-interest");
