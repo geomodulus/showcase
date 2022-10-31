@@ -26,8 +26,8 @@ function animateRoute(id) {
   }
 }
 
-function showDestinationPopup(e) {
-  const id = e.features[0].layer.id.slice(0, -12);
+function showPopup(e) {
+  const id = e.features[0].layer.id.slice(0, -7);
   const { destination, kilometers, player } = routes[id];
   const poi = destination.poi.properties.name;
   const content = document.createElement("div");
@@ -37,9 +37,10 @@ function showDestinationPopup(e) {
   module.clearPopups();
   module.showPopup(
     new mapboxgl.Popup({
-      anchor: window.innerWidth < 1024 ? "center" : "bottom",
+      anchor: window.innerWidth < 1024 ? "top" : "left",
       closeButton: false,
       focusAfterOpen: false,
+      maxWidth: window.innerWidth < 1024 ? "200px" : "240px",
       offset: 10,
     })
       .setLngLat(e.lngLat)
@@ -54,7 +55,6 @@ function showDestinationPopup(e) {
 
 function addDestinations() {
   // group into once source/layer?
-  // use border box to establish zoom
   for (const player in routes) {
     module.addSource(`${player}-destination`, {
       data: routes[player].destination.poi,
@@ -65,6 +65,7 @@ function addDestinations() {
       source: `${player}-destination`,
       type: "circle",
       paint: {
+        // "circle-color": "#FFF",
         "circle-opacity": 0,
         "circle-radius": 10,
         "circle-stroke-color": "#FFF",
@@ -72,8 +73,8 @@ function addDestinations() {
         "circle-stroke-width": 3,
       },
     });
-    const trigger = window.innerWidth < 1024 ? "click" : "mouseover";
-    module.on(trigger, `${player}-destination`, showDestinationPopup);
+    // const trigger = window.innerWidth < 1024 ? "click" : "mouseover";
+    // module.on(trigger, `${player}-destination`, showPopup);
   }
 }
 
@@ -90,8 +91,8 @@ function mapRoutes() {
       type: "line",
       paint: {
         "line-color": "#ED3242",
-        "line-opacity": 0.25,
-        "line-width": 2,
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0.4, 15, 0.3],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 15, 5],
       },
     });
     module.addSource(`${player}-symbol`, {
@@ -108,13 +109,28 @@ function mapRoutes() {
       layout: {
         "icon-allow-overlap": true,
         "icon-image": image ? image : "orange-bball",
-        "icon-size": image ? 0.2 : 0.5,
+        "icon-size": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          11.5,
+          image ? 0.075 : 0.25,
+          12.5,
+          image ? 0.15 : 0.75,
+          15,
+          image ? 0.3 : 1.5,
+        ],
       },
-      // paint: {
-      //   "icon-opacity": image ? 0.75 : 0.85,
-      // }
+      paint: {
+        "icon-opacity": image ? 0.9 : 0.8,
+      },
     });
-    // module.on("mouseover", player, (e) => console.log(e.features[0]));
+    if (window.innerWidth < 1024) {
+      module.on("click", `${player}-symbol`, showPopup);
+    } else {
+      module.on("mouseenter", `${player}-symbol`, showPopup);
+      module.on("mouseleave", `${player}-symbol`, () => module.clearPopups());
+    }
     animateRoute(player);
   }
 }
@@ -149,21 +165,54 @@ function addPoints() {
   }
 }
 
-const destinations = [];
+const bboxRaw = [
+  [-79.37908202254908, 43.64344005465493], // arena
+];
+function zoomToBbox() {
+  let minLng, minLat, maxLng, maxLat;
+  bboxRaw.forEach((point) => {
+    if (minLng === undefined || point[0] < minLng) minLng = point[0];
+    if (minLat === undefined || point[1] < minLat) minLat = point[1];
+    if (maxLng === undefined || point[0] > maxLng) maxLng = point[0];
+    if (maxLat === undefined || point[1] > maxLat) maxLat = point[1];
+  });
+  const bearing = module.map.getBearing();
+  const padding =
+    window.innerWidth < 1024
+      ? { top: 50, bottom: 30, left: 10, right: 10 }
+      : 20;
+  module.map.fitBounds(
+    [
+      [minLng, minLat],
+      [maxLng, maxLat],
+    ],
+    {
+      bearing: bearing,
+      linear: true,
+      padding: padding,
+    }
+  );
+}
 
+const destinations = [];
 function findMatches(distances) {
   destinations.sort((a, b) => {
     return a.route.routes[0].distance - b.route.routes[0].distance;
   });
+  distances.data.sort((a, b) => {
+    return a.distance - b.distance;
+  });
   distances.data.forEach((player) => {
     if (player.distance > 0) {
       const meters = player.distance * 1609.344;
-      const destination = destinations.find(
-        (poi) => poi.route.routes[0].distance > meters // remove from available list once assigned to a player (no repeats)
+      const destIndex = destinations.findIndex(
+        (poi) => poi.route.routes[0].distance > meters
       );
+      const destination = { ...destinations[destIndex] };
+      destinations.splice(destIndex, 1);
       const id = player.name.replaceAll(" ", "-");
       const km = (meters / 1000).toFixed(2);
-      console.log(id, "ran", km, "km to", destination.poi.properties.name);
+      // console.log(id, "ran", km, "km to", destination.poi.properties.name);
       routes[id] = {
         coordinates: [...destination.route.routes[0].geometry.coordinates],
         destination: destination,
@@ -171,6 +220,7 @@ function findMatches(distances) {
         kilometers: km,
         player: player.name,
       };
+      bboxRaw.push(destination.poi.geometry.coordinates);
       if (player.image) routes[id].image = player.image;
       routes[id].geometry.coordinates = [];
     }
@@ -179,10 +229,9 @@ function findMatches(distances) {
     const smoothed = smooth(routes[player].coordinates);
     routes[player].coordinates = smoothed;
   }
-  addDestinations();
-  // setTimeout(() => {
+  // addDestinations();
+  zoomToBbox();
   module.map.once("idle", mapRoutes);
-  // }, 500);
 }
 
 function addImages(data) {
@@ -251,11 +300,3 @@ setTimeout(() => {
       getDestinations(poi._data.features);
     }, 1000);
 }, 500);
-
-if (window.innerWidth > 1023) {
-  module.map.once("idle", () => {
-    module.map.easeTo({
-      zoom: 12.5,
-    });
-  });
-}
