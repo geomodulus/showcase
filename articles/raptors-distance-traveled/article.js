@@ -175,10 +175,12 @@ function zoomToBbox() {
     if (maxLat === undefined || point[1] > maxLat) maxLat = point[1];
   });
   const bearing = module.map.getBearing();
-  const padding =
-    window.innerWidth < 1024
-      ? { top: 50, bottom: 30, left: 10, right: 10 }
-      : { top: 50, bottom: 0, left: 0, right: 0 };
+  const padding = {
+    top: window.innerWidth < 1024 ? 75 : 100,
+    bottom: 25,
+    left: 25,
+    right: 25,
+  };
   module.map.fitBounds(
     [
       [minLng, minLat],
@@ -186,10 +188,12 @@ function zoomToBbox() {
     ],
     {
       bearing: bearing,
+      duration: 2000,
       linear: true,
       padding: padding,
     }
   );
+  module.map.once("idle", mapRoutes);
 }
 
 const destinations = [];
@@ -227,9 +231,7 @@ function findMatches(distances) {
     const smoothed = smooth(routes[player].coordinates);
     routes[player].coordinates = smoothed;
   }
-  // addDestinations();
-  zoomToBbox();
-  module.map.once("idle", mapRoutes);
+  setTimeout(zoomToBbox, 1000);
 }
 
 function addImages(data) {
