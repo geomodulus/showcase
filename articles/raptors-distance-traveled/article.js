@@ -1,7 +1,7 @@
 // arena center
 const arena = {
-  lng: -79.37908202254908,
-  lat: 43.64344005465493,
+  lng: -79.3790169712448,
+  lat: 43.64344921310201,
 };
 
 const token =
@@ -165,9 +165,7 @@ function addPoints() {
   }
 }
 
-const bboxRaw = [
-  [-79.37908202254908, 43.64344005465493], // arena
-];
+const bboxRaw = [[arena.lng, arena.lat]];
 function zoomToBbox() {
   let minLng, minLat, maxLng, maxLat;
   bboxRaw.forEach((point) => {
@@ -180,7 +178,7 @@ function zoomToBbox() {
   const padding =
     window.innerWidth < 1024
       ? { top: 50, bottom: 30, left: 10, right: 10 }
-      : 20;
+      : { top: 50, bottom: 0, left: 0, right: 0 };
   module.map.fitBounds(
     [
       [minLng, minLat],
@@ -280,6 +278,73 @@ function getDestinations(features) {
   Promise.all(fetches).then(() => {
     getDistances();
   });
+}
+
+function addArena() {
+  // add arena location as source
+  module.addSource("scotiabank-arena", {
+    data: {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [arena.lng, arena.lat],
+      },
+      properties: {
+        title: "Scotiabank Arena",
+      },
+    },
+    type: "geojson",
+  });
+  // add symbol at arena location (rotate as needed)
+  module.addVizLayer({
+    id: "scotiabank-arena",
+    source: "scotiabank-arena",
+    type: "symbol",
+    layout: {
+      "icon-image": "scotiabank-arena",
+      "icon-pitch-alignment": "map",
+      "icon-rotate": 12.5,
+      "icon-size": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        9,
+        0.05,
+        16,
+        0.125,
+        18,
+        0.5,
+        20,
+        0.75,
+        22,
+        1,
+      ],
+    },
+    paint: {
+      "icon-opacity": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        9,
+        0,
+        12,
+        0.75,
+        18,
+        1,
+      ],
+    },
+  });
+}
+
+if (!module.map.hasImage("scotiabank-arena")) {
+  module.map.loadImage(
+    "https://media.geomodul.us/img/scotiabank-arena-md.png",
+    (error, image) => {
+      if (error) console.log("Error loading image", error);
+      module.map.addImage("scotiabank-arena", image);
+      addArena();
+    }
+  );
 }
 
 if (!module.map.hasImage("orange-bball")) {
