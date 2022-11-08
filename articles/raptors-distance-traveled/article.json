@@ -8,5 +8,18 @@
   "pub_date": "2022-11-01",
   "code_credit": "Kyle Duncan",
   "loc": { "lng": -79.3790169712448, "lat": 43.64344921310201 },
-  "zoom": 16.4
+  "zoom": 16.4,
+  "teaser": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [-79.3790169712448, 43.64344921310201]
+    },
+    "properties": {
+      "symbols-layer": {
+        "icon-image": "scotiabank-arena-teaser"
+      },
+      "circle-interactions-layer": {}
+    }
+  }
 }
