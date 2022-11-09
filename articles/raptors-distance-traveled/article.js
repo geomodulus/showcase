@@ -4,9 +4,6 @@ const arena = {
   lat: 43.64344921310201,
 };
 
-const token =
-  "pk.eyJ1IjoiZ2VvbW9kdWx1cyIsImEiOiJja2hubHI2eG0wMW1jMnJxcTk1OWVycjF1In0.kKg7JGdOkhKk_tiS-Wh-Rw";
-
 const routes = {};
 
 function addRoutePoint(id) {
@@ -50,31 +47,6 @@ function showPopup(e) {
     module.map.easeTo({
       center: e.lngLat,
     });
-  }
-}
-
-function addDestinations() {
-  // group into once source/layer?
-  for (const player in routes) {
-    module.addSource(`${player}-destination`, {
-      data: routes[player].destination.poi,
-      type: "geojson",
-    });
-    module.addFeatureLayer({
-      id: `${player}-destination`,
-      source: `${player}-destination`,
-      type: "circle",
-      paint: {
-        // "circle-color": "#FFF",
-        "circle-opacity": 0,
-        "circle-radius": 10,
-        "circle-stroke-color": "#FFF",
-        "circle-stroke-opacity": 0.75,
-        "circle-stroke-width": 3,
-      },
-    });
-    // const trigger = window.innerWidth < 1024 ? "click" : "mouseover";
-    // module.on(trigger, `${player}-destination`, showPopup);
   }
 }
 
@@ -260,28 +232,6 @@ function getDistances() {
     .catch((e) => console.log("error:", e));
 }
 
-function getDestinations(features) {
-  const fetches = [];
-  features.forEach((f) => {
-    const { coordinates } = f.geometry;
-    const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${arena.lng},${arena.lat};${coordinates[0]},${coordinates[1]}?geometries=geojson&access_token=${token}`;
-    const p = fetch(url)
-      .then((r) => r.json())
-      .then((d) => {
-        const pair = {
-          poi: f,
-          route: d,
-        };
-        destinations.push(pair);
-      })
-      .catch((e) => console.log("error:", e));
-    fetches.push(p);
-  });
-  Promise.all(fetches).then(() => {
-    getDistances();
-  });
-}
-
 function addArena() {
   // add arena location as source
   module.addSource("scotiabank-arena", {
@@ -359,11 +309,12 @@ if (!module.map.hasImage("orange-bball")) {
   );
 }
 
-const poi = module.map.getSource("places-of-interest");
-setTimeout(() => {
-  if (poi._data.features.length) getDestinations(poi._data.features);
-  else
-    setTimeout(() => {
-      getDestinations(poi._data.features);
-    }, 1000);
-}, 500);
+fetch(
+  "https://media.geomodul.us/articles/raptors-distance-travelled/poi-routes.json"
+)
+  .then((r) => r.json())
+  .then((d) => {
+    d.forEach((l) => destinations.push(l));
+    getDistances();
+  })
+  .catch((e) => console.log("error:", e));
