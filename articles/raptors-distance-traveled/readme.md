@@ -52,7 +52,7 @@ setTimeout(() => {
 }, 500);
 ```
 
-2. Copy the resulting object for the console log and replace the data in [poi-routes.json]("https://media.geomodul.us/articles/raptors-distance-travelled/poi-routes.json")
+2. Copy the resulting object for the console log and replace the data in [poi-routes.json](https://media.geomodul.us/articles/raptors-distance-travelled/poi-routes.json)
 
 3. Update the "last updated" field below.
 
