@@ -107,36 +107,6 @@ function mapRoutes() {
   }
 }
 
-function smooth(array) {
-  const smoothed = [...array];
-  for (let i = 0; i + 1 < smoothed.length; i++) {
-    function addMidpoint() {
-      const midpoint = turf.midpoint(
-        turf.point(smoothed[i]),
-        turf.point(smoothed[i + 1])
-      );
-      smoothed.splice(i + 1, 0, midpoint.geometry.coordinates);
-      checkDistance();
-    }
-    function checkDistance() {
-      const d = turf.distance(
-        turf.point(smoothed[i]),
-        turf.point(smoothed[i + 1])
-      );
-      if (d > 0.1) addMidpoint();
-    }
-    checkDistance();
-  }
-  return smoothed;
-}
-
-function addPoints() {
-  for (const player in routes) {
-    const smoothed = smooth(routes[player].coordinates);
-    routes[player].coordinates = smoothed;
-  }
-}
-
 const bboxRaw = [[arena.lng, arena.lat]];
 function zoomToBbox() {
   let minLng, minLat, maxLng, maxLat;
@@ -200,7 +170,7 @@ function findMatches(distances) {
     }
   });
   for (const player in routes) {
-    const smoothed = smooth(routes[player].coordinates);
+    const smoothed = module.smoothRoute(routes[player].coordinates);
     routes[player].coordinates = smoothed;
   }
   setTimeout(zoomToBbox, 1000);
