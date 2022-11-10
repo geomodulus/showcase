@@ -9,6 +9,9 @@
   "code_credit": "Kyle Duncan",
   "loc": { "lng": -79.3790169712448, "lat": 43.64344921310201 },
   "zoom": 16.4,
+  "promo_start": "2022-11-10T10:30:00-05:00",
+  "promo_until": "2022-12-01T10:30:00-05:00",
+  "promo_wait": "60m",
   "teaser": {
     "type": "Feature",
     "geometry": {
