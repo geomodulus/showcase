@@ -16,8 +16,23 @@ function addRoutePoint(id) {
   return routes[id].geometry;
 }
 
+let abort = false;
+window.addEventListener(
+  "flexWindowReset",
+  () => {
+    abort = true;
+    for (const player in routes) {
+      if (module.map.getLayer(player)) {
+        module.map.setLayoutProperty(player, "visibility", "none");
+        module.map.setLayoutProperty(`${player}-symbol`, "visibility", "none");
+      }
+    }
+  },
+  { once: true }
+);
+
 function animateRoute(id) {
-  if (routes[id].coordinates.length > 0) {
+  if (routes[id].coordinates.length > 0 && !abort) {
     module.map.getSource(id).setData(addRoutePoint(id));
     requestAnimationFrame(() => animateRoute(id));
   }
@@ -53,6 +68,10 @@ function showPopup(e) {
 function mapRoutes() {
   for (const player in routes) {
     const { geometry, image } = routes[player];
+    if (module.map.getLayer(player)) {
+      module.map.removeLayer(player);
+      module.map.removeLayer(`${player}-symbol`);
+    }
     module.addSource(player, {
       data: geometry,
       type: "geojson",
@@ -103,7 +122,7 @@ function mapRoutes() {
       module.on("mouseenter", `${player}-symbol`, showPopup);
       module.on("mouseleave", `${player}-symbol`, () => module.clearPopups());
     }
-    animateRoute(player);
+    if (!abort) animateRoute(player);
   }
 }
 
@@ -152,7 +171,9 @@ function findMatches(distances) {
       const destIndex = destinations.findIndex(
         (poi) => poi.route.routes[0].distance > meters
       );
-      const destination = { ...destinations[destIndex] };
+      const destination = destIndex
+        ? { ...destinations[destIndex] }
+        : { ...destinations[destinations.length - 1] };
       destinations.splice(destIndex, 1);
       const id = player.name.replaceAll(" ", "-");
       const km = (meters / 1000).toFixed(2);
@@ -267,7 +288,7 @@ if (!module.map.hasImage("scotiabank-arena")) {
       addArena();
     }
   );
-}
+} else addArena();
 
 if (!module.map.hasImage("orange-bball")) {
   module.map.loadImage(
