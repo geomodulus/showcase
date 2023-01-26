@@ -7,22 +7,26 @@
   "authors": ["Craig Battle"],
   "pub_date": "2022-11-10",
   "code_credit": "Kyle Duncan",
-  "loc": { "lng": -79.3790169712448, "lat": 43.64344921310201 },
-  "zoom": 16.4,
   "promo_start": "2022-11-10T10:30:00-05:00",
   "promo_until": "2022-12-01T10:30:00-05:00",
-  "promo_wait": "60m",
+  "promo_wait": "1h0m0s",
+  "promo_expires": "2023-01-25T20:32:23.193779372-05:00",
+  "loc": {
+    "lng": -79.3790169712448,
+    "lat": 43.64344921310201
+  },
+  "zoom": 16.4,
   "teaser": {
-    "type": "Feature",
     "geometry": {
-      "type": "Point",
-      "coordinates": [-79.3790169712448, 43.64344921310201]
+      "coordinates": [-79.3790169712448, 43.64344921310201],
+      "type": "Point"
     },
     "properties": {
+      "circle-interactions-layer": {},
       "symbols-layer": {
         "icon-image": "scotiabank-arena-teaser"
-      },
-      "circle-interactions-layer": {}
-    }
+      }
+    },
+    "type": "Feature"
   }
 }
