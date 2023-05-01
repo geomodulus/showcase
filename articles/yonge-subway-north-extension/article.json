@@ -1,0 +1,30 @@
+{
+  "id": "c0ac6efb-e84f-11ed-b26d-c4bde51bd320",
+  "display_name": "Yonge North subway extension",
+  "h2": "The new TTC Line 1 Subway extension is taking another big step forward with the release of a tunnelling RFQ. But what is this project, why are we building it, and when can we get on board?",
+  "img_url": "",
+  "categories": [],
+  "authors": ["Reece Martin"],
+  "camera": {
+    "": {
+      "bearing": -70,
+      "center": [-79.4193, 43.8165],
+      "zoom": 11.35
+    },
+    "lg": {
+      "bearing": -30,
+      "center": [-79.4364, 43.8048],
+      "zoom": 12.7
+    }
+  },
+  "pub_date": "2023-05-08",
+  "code_credit": "Kyle Duncan",
+  "promo_start": "0001-01-01T00:00:00Z",
+  "promo_until": "0001-01-01T00:00:00Z",
+  "promo_wait": "0s",
+  "promo_expires": "0001-01-01T00:00:00Z",
+  "loc": {
+    "lng": 0,
+    "lat": 0
+  }
+}
