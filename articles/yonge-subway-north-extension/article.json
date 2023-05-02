@@ -1,9 +1,9 @@
 {
   "id": "c0ac6efb-e84f-11ed-b26d-c4bde51bd320",
-  "display_name": "Yonge North subway extension",
-  "h2": "The new TTC Line 1 Subway extension is taking another big step forward with the release of a tunnelling RFQ. But what is this project, why are we building it, and when can we get on board?",
-  "img_url": "",
-  "categories": [],
+  "display_name": "North to Richmond Hill: Breaking down the Yonge subway extension",
+  "h2": "Toronto’s next big mass transit project just took a big step forward. Here’s the latest.",
+  "img_url": "https://media.geomodul.us/img/yonge-subway-train.jpg",
+  "categories": ["Transit"],
   "authors": ["Reece Martin"],
   "camera": {
     "": {
@@ -17,7 +17,7 @@
       "zoom": 12.7
     }
   },
-  "pub_date": "2023-05-08",
+  "pub_date": "2023-05-03",
   "code_credit": "Kyle Duncan",
   "promo_start": "0001-01-01T00:00:00Z",
   "promo_until": "0001-01-01T00:00:00Z",
