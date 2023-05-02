@@ -72,6 +72,11 @@ function addLegend() {
       image: "line",
       colour: "bg-[#00A168]",
     },
+    {
+      label: "Viva BRT Lines",
+      image: "line",
+      colour: "bg-[#108DF6]",
+    },
   ];
   const ul = document.createElement("ul");
   categories.forEach((c) => ul.appendChild(buildLegendLi(c)));
@@ -218,7 +223,7 @@ function addGoLine() {
     type: "line",
     paint: {
       "line-color": "#00A168",
-      "line-opacity": 0.5,
+      "line-opacity": 0.25,
       "line-width": lineWidth,
     },
     layout: {
@@ -269,5 +274,30 @@ fetch(
     });
     addGoLine();
     addMainViz();
+  })
+  .catch((e) => console.error(e));
+
+fetch(
+  "https://media.geomodul.us/articles/yonge-north-subway-extension/viva-brt-routes.geojson"
+)
+  .then((r) => r.json())
+  .then((d) => {
+    module.addSource("bus-routes", {
+      data: d,
+      type: "geojson",
+    });
+    module.addFeatureLayer({
+      id: "bus-routes",
+      source: "bus-routes",
+      type: "line",
+      paint: {
+        "line-color": "#108DF6",
+        "line-opacity": 0.25,
+        "line-width": lineWidth,
+      },
+      layout: {
+        "line-cap": "round",
+      },
+    });
   })
   .catch((e) => console.error(e));
