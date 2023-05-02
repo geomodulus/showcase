@@ -1,6 +1,41 @@
+function buildLegendLi(properties) {
+  const { label, image, colour } = properties;
+  const li = document.createElement("li");
+
+  const container = document.createElement("div");
+  container.className = "flex h-9 items-center justify-center pb-3 w-12";
+  const icon = document.createElement("div");
+  container.appendChild(icon);
+
+  switch (image) {
+    case "line":
+      icon.className = "h-[5px] w-10";
+      break;
+    case "smallCircle":
+      icon.className =
+        "bg-transparent border-[3px] h-[15px] rounded-full w-[15px]";
+      break;
+    case "largeCircle":
+      icon.className =
+        "bg-[#F0F2F4] border-[5px] h-[30px] rounded-full w-[30px]";
+      break;
+    default:
+      break;
+  }
+
+  icon.classList.add(colour);
+  li.className = "flex items-center";
+  li.appendChild(container);
+
+  const p = document.createElement("p");
+  p.innerText += label;
+  li.appendChild(p);
+
+  return li;
+}
+
 function addLegend() {
   module.setLegendTitle("Yonge North subway extension");
-
   const categories = [
     {
       label: "Tunneled Line",
@@ -33,19 +68,8 @@ function addLegend() {
       colour: "border-[#E2871F]",
     },
   ];
-
   const ul = document.createElement("ul");
-  ul.className = "space-y-1";
-
-  categories.forEach((c) => {
-    const li = document.createElement("li");
-    const span = document.createElement("span");
-    li.appendChild(span);
-    li.className = "border-2";
-    li.classList.add(c.colour);
-    li.innerHTML += c.label;
-    ul.appendChild(li);
-  });
+  categories.forEach((c) => ul.appendChild(buildLegendLi(c)));
   module.addToLegend(ul);
   module.initLegend();
 }
