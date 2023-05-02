@@ -13,11 +13,11 @@ function buildLegendLi(properties) {
       break;
     case "smallCircle":
       icon.className =
-        "bg-transparent border-[3px] h-[15px] rounded-full w-[15px]";
+        "bg-[#F0F2F4] border-[3px] h-[15px] rounded-full w-[15px]";
       break;
     case "largeCircle":
       icon.className =
-        "bg-[#F0F2F4] border-[5px] h-[30px] rounded-full w-[30px]";
+        "bg-transparent border-[5px] h-[30px] rounded-full w-[30px]";
       break;
     default:
       break;
@@ -38,19 +38,19 @@ function addLegend() {
   module.setLegendTitle("Yonge North subway extension");
   const categories = [
     {
-      label: "Tunneled Line",
+      label: "Tunneled Line (approximate)",
       image: "line",
       colour: "bg-[#FFD515]",
     },
     {
-      label: "At-Grade Line",
+      label: "At-Grade Line (approximate)",
       image: "line",
       colour: "bg-[#E2871F]",
     },
     {
       label: "Confirmed Station",
       image: "smallCircle",
-      colour: "border-[#141516]",
+      colour: "border-[#1D1E23]",
     },
     {
       label: "Potential Station",
@@ -58,7 +58,7 @@ function addLegend() {
       colour: "border-[#A3A8AC]",
     },
     {
-      label: "Transit Hub ",
+      label: "Transit Hub",
       image: "largeCircle",
       colour: "border-[#00A168]",
     },
@@ -67,10 +67,19 @@ function addLegend() {
       image: "largeCircle",
       colour: "border-[#E2871F]",
     },
+    {
+      label: "Richmond Hill Go Line",
+      image: "line",
+      colour: "bg-[#00A168]",
+    },
   ];
   const ul = document.createElement("ul");
   categories.forEach((c) => ul.appendChild(buildLegendLi(c)));
+  const source = document.createElement("p");
   module.addToLegend(ul);
+  source.className = "mt-3";
+  source.innerHTML = `Source: <a href="https://www.metrolinx.com/en/projects-and-programs/yonge-north-subway-extension" target="_blank">Metrolinx Project Page</a>`;
+  module.addToLegend(source);
   module.initLegend();
 }
 
@@ -78,9 +87,13 @@ const lineWidth = ["interpolate", ["linear"], ["zoom"], 14, 5, 20, 10];
 
 const opacity = [
   "case",
-  ["all", ["==", ["get", "LINE"], 1], ["!=", ["get", "STATION"], "Finch"]],
-  0.25,
+  [
+    "any",
+    ["==", ["get", "LINE"], "1-ext"],
+    ["==", ["get", "STATION"], "Finch"],
+  ],
   0.9,
+  0.25,
 ];
 
 function addLines() {
@@ -142,7 +155,7 @@ function addLines() {
       "circle-stroke-color": [
         "case",
         ["any", ["get", "confirmed-station"], ["==", ["get", "LINE"], 1]],
-        "#141516",
+        "#1D1E23",
         "#A3A8AC",
       ],
       "circle-stroke-opacity": opacity,
@@ -182,16 +195,79 @@ function addLines() {
   });
 }
 
+function addMainViz() {
+  fetch(
+    "https://media.geomodul.us/articles/yonge-north-subway-extension/yonge-north-extension.geojson"
+  )
+    .then((r) => r.json())
+    .then((d) => {
+      module.addSource("yonge-north-extension", {
+        data: d,
+        type: "geojson",
+      });
+      addLines();
+      addLegend();
+    })
+    .catch((e) => console.error(e));
+}
+
+function addGoLine() {
+  module.addFeatureLayer({
+    id: "richmond-line",
+    source: "richmond-hill",
+    type: "line",
+    paint: {
+      "line-color": "#00A168",
+      "line-opacity": 0.5,
+      "line-width": lineWidth,
+    },
+    layout: {
+      "line-cap": "round",
+    },
+  });
+  module.addFeatureLayer({
+    id: "richmond-stops",
+    filter: [
+      "all",
+      ["==", ["geometry-type"], "Point"],
+      ["==", ["get", "STNTYPE"], "Passenger Station"],
+    ],
+    source: "richmond-hill",
+    type: "circle",
+    paint: {
+      "circle-color": "#F0F2F4",
+      "circle-opacity": opacity,
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 14, 5, 20, 15],
+      "circle-stroke-color": [
+        "case",
+        ["any", ["get", "confirmed-station"], ["==", ["get", "LINE"], 1]],
+        "#1D1E23",
+        "#A3A8AC",
+      ],
+      "circle-stroke-opacity": opacity,
+      "circle-stroke-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        14,
+        3,
+        20,
+        5,
+      ],
+    },
+  });
+}
+
 fetch(
-  "https://media.geomodul.us/articles/yonge-north-subway-extension/yonge-north-extension.geojson"
+  "https://media.geomodul.us/articles/yonge-north-subway-extension/richmondHill.geojson"
 )
   .then((r) => r.json())
   .then((d) => {
-    module.addSource("yonge-north-extension", {
+    module.addSource("richmond-hill", {
       data: d,
       type: "geojson",
     });
-    addLines();
-    addLegend();
+    addGoLine();
+    addMainViz();
   })
   .catch((e) => console.error(e));
