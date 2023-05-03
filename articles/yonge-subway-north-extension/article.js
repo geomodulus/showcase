@@ -1,3 +1,51 @@
+const triggers = {
+  zoomIn: () => {
+    if (["", "sm", "md"].includes(module.currentBreakpoint())) {
+      module.map.easeTo({
+        duration: 3000,
+        center: [-79.4208, 43.8059],
+        zoom: 11.35,
+      });
+    } else {
+      module.map.easeTo({
+        duration: 4000,
+        center: [-79.4364, 43.8048],
+        zoom: 12.7,
+      });
+    }
+  },
+  turnNorth: () => {
+    if (["", "sm", "md"].includes(module.currentBreakpoint())) {
+      module.map.easeTo({
+        center: [-79.4237, 43.8282],
+        duration: 3000,
+        zoom: 12.7,
+      });
+    } else {
+      module.map.easeTo({
+        center: [-79.4316, 43.8283],
+        duration: 4000,
+        zoom: 14.13,
+      });
+    }
+  },
+  resetView: () => {
+    module.map.easeTo({
+      duration: 10000,
+      ...module.initialView(),
+    });
+    ["bus-routes", "richmond-line", "yonge-ext-lines"].forEach((l) => {
+      module.map.setPaintProperty(l, "line-opacity", 0.9);
+    });
+  },
+};
+
+function addTriggers() {
+  for (const t in triggers) {
+    module.addScrollTrigger(`#${t}`, 0, triggers[t]);
+  }
+}
+
 function buildLegendLi(properties) {
   const { label, image, colour } = properties;
   const li = document.createElement("li");
@@ -71,6 +119,11 @@ function addLegend() {
       label: "Richmond Hill Go Line",
       image: "line",
       colour: "bg-[#00A168]",
+    },
+    {
+      label: "Viva BRT Lines",
+      image: "line",
+      colour: "bg-[#108DF6]",
     },
   ];
   const ul = document.createElement("ul");
@@ -207,6 +260,7 @@ function addMainViz() {
       });
       addLines();
       addLegend();
+      addTriggers();
     })
     .catch((e) => console.error(e));
 }
@@ -218,7 +272,7 @@ function addGoLine() {
     type: "line",
     paint: {
       "line-color": "#00A168",
-      "line-opacity": 0.5,
+      "line-opacity": 0.25,
       "line-width": lineWidth,
     },
     layout: {
@@ -269,5 +323,30 @@ fetch(
     });
     addGoLine();
     addMainViz();
+  })
+  .catch((e) => console.error(e));
+
+fetch(
+  "https://media.geomodul.us/articles/yonge-north-subway-extension/viva-brt-routes.geojson"
+)
+  .then((r) => r.json())
+  .then((d) => {
+    module.addSource("bus-routes", {
+      data: d,
+      type: "geojson",
+    });
+    module.addFeatureLayer({
+      id: "bus-routes",
+      source: "bus-routes",
+      type: "line",
+      paint: {
+        "line-color": "#108DF6",
+        "line-opacity": 0.25,
+        "line-width": lineWidth,
+      },
+      layout: {
+        "line-cap": "round",
+      },
+    });
   })
   .catch((e) => console.error(e));
