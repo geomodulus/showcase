@@ -420,3 +420,5 @@ fetch(
     });
   })
   .catch((e) => console.error(e));
+
+module.initAdUnits();
