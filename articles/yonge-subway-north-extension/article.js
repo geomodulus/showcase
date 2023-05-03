@@ -1,49 +1,62 @@
-const triggers = {
-  zoomIn: () => {
-    if (["", "sm", "md"].includes(module.currentBreakpoint())) {
-      module.map.easeTo({
+const sceneList = [
+  {
+    id: "zoomIn",
+    function: () => {},
+    camera: {
+      "": {
         duration: 3000,
         center: [-79.4208, 43.8059],
         zoom: 11.35,
-      });
-    } else {
-      module.map.easeTo({
+      },
+      lg: {
         duration: 4000,
         center: [-79.4364, 43.8048],
         zoom: 12.7,
-      });
-    }
+      },
+    },
   },
-  turnNorth: () => {
-    if (["", "sm", "md"].includes(module.currentBreakpoint())) {
-      module.map.easeTo({
+  {
+    id: "turnNorth",
+    function: () => {},
+    camera: {
+      "": {
         center: [-79.4237, 43.8282],
         duration: 3000,
         zoom: 12.7,
-      });
-    } else {
-      module.map.easeTo({
+      },
+      lg: {
         center: [-79.4316, 43.8283],
         duration: 4000,
         zoom: 14.13,
+      },
+    },
+  },
+  {
+    id: "resetView",
+    function: () => {
+      ["bus-routes", "richmond-line", "yonge-ext-lines"].forEach((l) => {
+        module.map.setPaintProperty(l, "line-opacity", 0.9);
       });
-    }
+    },
+    camera: {
+      "": {
+        duration: 10000,
+        ...module.initialView(),
+      },
+    },
   },
-  resetView: () => {
-    module.map.easeTo({
-      duration: 10000,
-      ...module.initialView(),
-    });
-    ["bus-routes", "richmond-line", "yonge-ext-lines"].forEach((l) => {
-      module.map.setPaintProperty(l, "line-opacity", 0.9);
-    });
-  },
-};
+];
 
-function addTriggers() {
-  for (const t in triggers) {
-    module.addScrollTrigger(`#${t}`, 0, triggers[t]);
-  }
+function addScenes() {
+  const scenes = module.newSceneList("yonge-north-extension");
+  sceneList.forEach((s) => {
+    scenes.add(s.id, s.camera);
+    module.addScrollTrigger(`#${s.id}`, 0, () => {
+      scenes.goTo(s.id);
+      s.function();
+    });
+  });
+  module.addButtonsForList(scenes);
 }
 
 function buildLegendLi(properties) {
@@ -151,6 +164,24 @@ const opacity = [
 
 function addLines() {
   module.addFeatureLayer({
+    id: "yonge-ext-line-highlight",
+    filter: [
+      "all",
+      ["==", ["geometry-type"], "LineString"],
+      ["==", ["get", "RID"], "1x"],
+    ],
+    source: "yonge-north-extension",
+    type: "line",
+    paint: {
+      "line-color": "#000",
+      "line-opacity": 0.75,
+      "line-width": ["interpolate", ["linear"], ["zoom"], 14, 10, 20, 20],
+    },
+    layout: {
+      "line-cap": "round",
+    },
+  });
+  module.addFeatureLayer({
     id: "yonge-ext-features",
     filter: [
       "any",
@@ -185,7 +216,7 @@ function addLines() {
         "#E2871F",
         "#FFD515",
       ],
-      "line-opacity": ["case", ["==", ["get", "RID"], 1], 0.25, 0.9],
+      "line-opacity": ["case", ["==", ["get", "RID"], 1], 0.2, 0.9],
       "line-width": lineWidth,
     },
     layout: {
@@ -260,7 +291,7 @@ function addMainViz() {
       });
       addLines();
       addLegend();
-      addTriggers();
+      addScenes();
     })
     .catch((e) => console.error(e));
 }
@@ -268,11 +299,12 @@ function addMainViz() {
 function addGoLine() {
   module.addFeatureLayer({
     id: "richmond-line",
+    filter: ["==", ["geometry-type"], "LineString"],
     source: "richmond-hill",
     type: "line",
     paint: {
       "line-color": "#00A168",
-      "line-opacity": 0.25,
+      "line-opacity": module.isDarkMode() ? 0.25 : 0.2,
       "line-width": lineWidth,
     },
     layout: {
@@ -292,12 +324,7 @@ function addGoLine() {
       "circle-color": "#F0F2F4",
       "circle-opacity": opacity,
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 14, 5, 20, 15],
-      "circle-stroke-color": [
-        "case",
-        ["any", ["get", "confirmed-station"], ["==", ["get", "LINE"], 1]],
-        "#1D1E23",
-        "#A3A8AC",
-      ],
+      "circle-stroke-color": "#1D1E23",
       "circle-stroke-opacity": opacity,
       "circle-stroke-width": [
         "interpolate",
@@ -308,6 +335,24 @@ function addGoLine() {
         20,
         5,
       ],
+    },
+  });
+  module.addVizLayer({
+    id: "richmond-hill-label",
+    filter: ["==", ["geometry-type"], "LineString"],
+    source: "richmond-hill",
+    type: "symbol",
+    layout: {
+      "symbol-placement": "line-center",
+      "text-field": "Richmond Hill GO Line",
+      "text-font": ["JetBrains Mono Regular"],
+      "text-size": ["interpolate", ["linear"], ["zoom"], 10, 16, 20, 22],
+    },
+    paint: {
+      "text-color": "#FFF",
+      "text-halo-color": "#7035E6",
+      "text-halo-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 20, 2],
+      "text-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0.25, 20, 0.5],
     },
   });
 }
@@ -341,11 +386,36 @@ fetch(
       type: "line",
       paint: {
         "line-color": "#108DF6",
-        "line-opacity": 0.25,
+        "line-opacity": module.isDarkMode() ? 0.25 : 0.2,
         "line-width": lineWidth,
       },
       layout: {
         "line-cap": "round",
+      },
+    });
+    module.addVizLayer({
+      id: "bus-label",
+      source: "bus-routes",
+      type: "symbol",
+      layout: {
+        "symbol-placement": "line",
+        "text-field": "Viva BRT Line",
+        "text-font": ["JetBrains Mono Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 10, 16, 20, 22],
+      },
+      paint: {
+        "text-color": "#FFF",
+        "text-halo-color": "#7035E6",
+        "text-halo-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 20, 2],
+        "text-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10,
+          0.25,
+          20,
+          0.5,
+        ],
       },
     });
   })
