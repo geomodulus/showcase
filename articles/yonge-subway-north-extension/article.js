@@ -35,7 +35,7 @@ function buildLegendLi(properties) {
 }
 
 function addLegend() {
-  module.setLegendTitle("Yonge North subway extension");
+  module.setLegendTitle("Yonge North Subway Extension");
   const categories = [
     {
       label: "Tunneled Line (approximate)",
