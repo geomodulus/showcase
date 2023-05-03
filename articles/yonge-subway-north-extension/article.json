@@ -17,6 +17,11 @@
       "zoom": 11.7
     }
   },
+  "related": [
+    "d06887b4-b851-11ed-98b9-66eb68fb8db0",
+    "234b8f86-cfc2-11ec-9d64-0242ac120002",
+    "21df7ca8-c354-11ed-9cc7-66eb68fb8db0"
+  ],
   "pub_date": "2023-05-03",
   "code_credit": "Kyle Duncan",
   "promo_start": "0001-01-01T00:00:00Z",
@@ -36,9 +41,8 @@
           "line-interactions-layer": {},
           "lines-layer": {
             "line-color": "#FFD515",
-            "line-width": 5
-          },
-          "level": "tunneled"
+            "line-width": 10
+          }
         },
         "geometry": {
           "type": "LineString",
@@ -71,9 +75,8 @@
           "line-interactions-layer": {},
           "lines-layer": {
             "line-color": "#E2871F",
-            "line-width": 5
-          },
-          "level": "at-grade"
+            "line-width": 10
+          }
         },
         "geometry": {
           "type": "LineString",
@@ -85,10 +88,5 @@
         }
       }
     ]
-  },
-  "related": [
-    "d06887b4-b851-11ed-98b9-66eb68fb8db0",
-    "234b8f86-cfc2-11ec-9d64-0242ac120002",
-    "21df7ca8-c354-11ed-9cc7-66eb68fb8db0"
-  ]
+  }
 }
