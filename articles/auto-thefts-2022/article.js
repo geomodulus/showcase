@@ -1,361 +1,46 @@
-const neighbourhoods = [
-  "Victoria Village",
-  "Cliffcrest",
-  "Etobicoke City Centre",
-  "Edenbridge-Humber Valley",
-  "Mount Olive-Silverstone-Jamestown",
-  "Agincourt North",
-  "Woodbine-Lumsden",
-  "Glenfield-Jane Heights",
-  "Bendale-Glen Andrew",
-  "O'Connor-Parkview",
-  "Bendale South",
-  "Banbury-Don Mills",
-  "East Willowdale",
-  "Thorncliffe Park",
-  "York University Heights",
-  "Humber Summit",
-  "Bedford Park-Nortown",
-  "Avondale",
-  "Brookhaven-Amesbury",
-  "Briar Hill-Belgravia",
-  "Rustic",
-  "Junction Area",
-  "Keelesdale-Eglinton West",
-  "Kingsview Village-The Westway",
-  "Cabbagetown-South St.James Town",
-  "Wexford/Maryvale",
-  "NSA",
-  "Eglinton East",
-  "West Rouge",
-  "Dorset Park",
-  "Steeles",
-  "Bayview Woods-Steeles",
-  "Agincourt South-Malvern West",
-  "Fenside-Parkwoods",
-  "Humbermede",
-  "Newtonbrook East",
-  "Morningside Heights",
-  "Long Branch",
-  "Kennedy Park",
-  "South Riverdale",
-  "Don Valley Village",
-  "West Humber-Clairville",
-  "Trinity-Bellwoods",
-  "Taylor-Massey",
-  "Oakdale-Beverley Heights",
-  "Pelmo Park-Humberlea",
-  "Tam O'Shanter-Sullivan",
-  "Rockcliffe-Smythe",
-  "Regent Park",
-  "Yorkdale-Glen Park",
-  "Centennial Scarborough",
-  "Stonegate-Queensway",
-  "Oakridge",
-  "Wellington Place",
-  "Junction-Wallace Emerson",
-  "Hillcrest Village",
-  "St.Andrew-Windfields",
-  "Church-Wellesley",
-  "Forest Hill North",
-  "Humewood-Cedarvale",
-  "New Toronto",
-  "Weston",
-  "Clairlea-Birchmount",
-  "Bathurst Manor",
-  "Willowridge-Martingrove-Richview",
-  "Milliken",
-  "Islington",
-  "Corso Italia-Davenport",
-  "Kensington-Chinatown",
-  "Palmerston-Little Italy",
-  "Woburn North",
-  "Lambton Baby Point",
-  "High Park-Swansea",
-  "Weston-Pelham Park",
-  "Humber Heights-Westmount",
-  "Eringate-Centennial-West Deane",
-  "Bridle Path-Sunnybrook-York Mills",
-  "Downsview",
-  "Highland Creek",
-  "East End-Danforth",
-  "Mount Dennis",
-  "Lawrence Park North",
-  "North St.James Town",
-  "East L'Amoreaux",
-  "Westminster-Branson",
-  "Leaside-Bennington",
-  "Fort York-Liberty Village",
-  "Roncesvalles",
-  "West Hill",
-  "Lansing-Westgate",
-  "Harbourfront-CityPlace",
-  "Downtown Yonge East",
-  "Casa Loma",
-  "L'Amoreaux West",
-  "Dovercourt Village",
-  "Malvern West",
-  "South Parkdale",
-  "Thistletown-Beaumond Heights",
-  "Bayview Village",
-  "Clanton Park",
-  "Newtonbrook West",
-  "Princess-Rosethorn",
-  "Etobicoke West Mall",
-  "Dufferin Grove",
-  "West Queen West",
-  "Morningside",
-  "Maple Leaf",
-  "Flemingdon Park",
-  "Little Portugal",
-  "Ionview",
-  "Yonge-Bay Corridor",
-  "Englemount-Lawrence",
-  "Runnymede-Bloor West Village",
-  "Kingsway South",
-  "Playter Estates-Danforth",
-  "Scarborough Village",
-  "Moss Park",
-  "Mimico-Queensway",
-  "Rexdale-Kipling",
-  "Lawrence Park South",
-  "Elms-Old Rexdale",
-  "Annex",
-  "Malvern East",
-  "Yonge-Doris",
-  "Markland Wood",
-  "North Riverdale",
-  "Greenwood-Coxwell",
-  "Alderwood",
-  "Black Creek",
-  "Pleasant View",
-  "Golfdale-Cedarbrae-Woburn",
-  "University",
-  "Yonge-Eglinton",
-  "Henry Farm",
-  "Beechborough-Greenbrook",
-  "Caledonia-Fairbank",
-  "Bay-Cloverhill",
-  "Oakwood Village",
-  "Mount Pleasant East",
-  "High Park North",
-  "North Toronto",
-  "Parkwoods-O'Connor Hills",
-  "Humber Bay Shores",
-  "Yonge-St.Clair",
-  "South Eglinton-Davisville",
-  "St Lawrence-East Bayfront-The Islands",
-  "Blake-Jones",
-  "Birchcliffe-Cliffside",
-  "Old East York",
-  "Danforth East York",
-  "The Beaches",
-  "Guildwood",
-  "Forest Hill South",
-  "Woodbine Corridor",
-  "Rosedale-Moore Park",
-  "Danforth",
-  "Willowdale West",
-  "Broadview North",
-  "Wychwood",
-];
-
-const premisesTypes = [
-  "Apartment",
-  "Outside",
-  "House",
-  "Other",
-  "Commercial",
-  "Transit",
-  "Educational",
-];
-
-const locationTypes = [
-  "Apartment (Rooming House, Condo)",
-  "Streets, Roads, Highways (Bicycle Path, Private Road)",
-  "Parking Lots (Apt., Commercial Or Non-Commercial)",
-  "Single Home, House (Attach Garage, Cottage, Mobile)",
-  "Private Property Structure (Pool, Shed, Detached Garage)",
-  "Other Commercial / Corporate Places (For Profit, Warehouse, Corp. Bldg",
-  "Dealership (Car, Motorcycle, Marine, Trailer, Etc.)",
-  "Other Non Commercial / Corporate Places (Non-Profit, Gov'T, Firehall)",
-  "Go Station",
-  "Bank And Other Financial Institutions (Money Mart, Tsx)",
-  "Gas Station (Self, Full, Attached Convenience)",
-  "Ttc Subway Station",
-  "Commercial Dwelling Unit (Hotel, Motel, B & B, Short Term Rental)",
-  "Bar / Restaurant",
-  "Convenience Stores",
-  "Hospital / Institutions / Medical Facilities (Clinic, Dentist, Morgue)",
-  "Group Homes (Non-Profit, Halfway House, Social Agency)",
-  "Open Areas (Lakes, Parks, Rivers)",
-  "Unknown",
-  "Construction Site (Warehouse, Trailer, Shed)",
-  "Go Train",
-  "Police / Courts (Parole Board, Probation Office)",
-  "Schools During Supervised Activity",
-  "Religious Facilities (Synagogue, Church, Convent, Mosque)",
-  "Universities / Colleges",
-  "Homeless Shelter / Mission",
-  "Schools During Un-Supervised Activity",
-  "Cargo Train",
-  "Ttc Admin Or Support Facility",
-  "Retirement Home",
-  "Other Passenger Train Station",
-  "Nursing Home",
-  "Other Train Yard",
-  "Ttc Subway Tunnel / Outdoor Tracks",
-  "Ttc Bus Garage",
-  "Ttc Light Rail Transit Station",
-  "Community Group Home",
-];
-
-const premiseByLocations = {
-  Apartment: ["Apartment (Rooming House, Condo)"],
-  Outside: [
-    "Streets, Roads, Highways (Bicycle Path, Private Road)",
-    "Parking Lots (Apt., Commercial Or Non-Commercial)",
-    "Open Areas (Lakes, Parks, Rivers)",
-    "Other Train Yard",
-  ],
-  House: ["Single Home, House (Attach Garage, Cottage, Mobile)"],
-  Other: [
-    "Private Property Structure (Pool, Shed, Detached Garage)",
-    "Other Non Commercial / Corporate Places (Non-Profit, Gov'T, Firehall)",
-    "Hospital / Institutions / Medical Facilities (Clinic, Dentist, Morgue)",
-    "Group Homes (Non-Profit, Halfway House, Social Agency)",
-    "Unknown",
-    "Police / Courts (Parole Board, Probation Office)",
-    "Religious Facilities (Synagogue, Church, Convent, Mosque)",
-    "Homeless Shelter / Mission",
-    "Cargo Train",
-    "Retirement Home",
-    "Nursing Home",
-    "Community Group Home",
-  ],
-  Commercial: [
-    "Other Commercial / Corporate Places (For Profit, Warehouse, Corp. Bldg",
-    "Dealership (Car, Motorcycle, Marine, Trailer, Etc.)",
-    "Bank And Other Financial Institutions (Money Mart, Tsx)",
-    "Gas Station (Self, Full, Attached Convenience)",
-    "Commercial Dwelling Unit (Hotel, Motel, B & B, Short Term Rental)",
-    "Bar / Restaurant",
-    "Convenience Stores",
-    "Construction Site (Warehouse, Trailer, Shed)",
-  ],
-  Transit: [
-    "Go Station",
-    "Ttc Subway Station",
-    "Go Train",
-    "Ttc Admin Or Support Facility",
-    "Other Passenger Train Station",
-    "Ttc Subway Tunnel / Outdoor Tracks",
-    "Ttc Bus Garage",
-    "Ttc Light Rail Transit Station",
-  ],
-  Educational: [
-    "Schools During Supervised Activity",
-    "Universities / Colleges",
-    "Schools During Un-Supervised Activity",
-  ],
-};
-
-const egObj = {
-  OBJECTID: 42069,
-  EVENT_UNIQUE_ID: "GO-20221621018",
-  REPORT_DATE: "2022-08-22T04:00:00Z",
-  OCC_DATE: "2022-08-22T04:00:00Z",
-  REPORT_YEAR: 2022,
-  REPORT_MONTH: "August",
-  REPORT_DAY: 22,
-  REPORT_DOY: 234,
-  REPORT_DOW: "Monday    ",
-  REPORT_HOUR: 10,
-  OCC_YEAR: 2022,
-  OCC_MONTH: "August",
-  OCC_DAY: 22,
-  OCC_DOY: 234,
-  OCC_DOW: "Monday    ",
-  OCC_HOUR: 4,
-  DIVISION: "D52",
-  LOCATION_TYPE: "Streets, Roads, Highways (Bicycle Path, Private Road)",
-  PREMISES_TYPE: "Outside",
-  UCR_CODE: 2135,
-  UCR_EXT: 210,
-  OFFENCE: "Theft Of Motor Vehicle",
-  MCI_CATEGORY: "Auto Theft",
-  HOOD_158: "165",
-  NEIGHBOURHOOD_158: "Harbourfront-CityPlace",
-  HOOD_140: "77",
-  NEIGHBOURHOOD_140: "Waterfront Communities-The Island (77)",
-  LONG_WGS84: -79.3848090608592,
-  LAT_WGS84: 43.6442736720865,
-};
-
-const properties = [
-  "OBJECTID",
-  "EVENT_UNIQUE_ID",
-  // reporting
-  "REPORT_DATE",
-  "REPORT_YEAR",
-  "REPORT_MONTH",
-  "REPORT_DAY",
-  "REPORT_DOY",
-  "REPORT_DOW",
-  "REPORT_HOUR",
-  // occurence
-  "OCC_DATE",
-  "OCC_YEAR",
-  "OCC_MONTH",
-  "OCC_DAY",
-  "OCC_DOY",
-  "OCC_DOW",
-  "OCC_HOUR",
-  // location
-  "DIVISION",
-  "LOCATION_TYPE",
-  "PREMISES_TYPE",
-  "UCR_CODE",
-  "UCR_EXT",
-  "OFFENCE",
-  "MCI_CATEGORY",
-  "HOOD_158",
-  "NEIGHBOURHOOD_158",
-  "HOOD_140",
-  "NEIGHBOURHOOD_140",
-  "LONG_WGS84",
-  "LAT_WGS84",
-];
-
-function getPropertyRange(data, property) {
-  const values = [];
-  data.features.forEach((f) => {
-    if (values.includes(f.properties[property])) return;
-    values.push(f.properties[property]);
-  });
-  console.log(property, values);
-  if (property == "PREMISES_TYPE") {
-    const premisesSubCat = {};
-    values.forEach((v) => {
-      premisesSubCat[v] = [];
-    });
-    data.features.forEach((f) => {
-      if (
-        premisesSubCat[f.properties[property]].includes(
-          f.properties["LOCATION_TYPE"]
-        )
-      )
-        return;
-      premisesSubCat[f.properties[property]].push(
-        f.properties["LOCATION_TYPE"]
-      );
-    });
-    console.log(premisesSubCat);
-  }
-}
-
 function showPopup(e) {
-  console.log(e.features[0].properties);
+  const {
+    // occurene
+    OCC_DATE,
+    OCC_YEAR,
+    OCC_MONTH,
+    OCC_DAY,
+    OCC_DOY,
+    OCC_DOW,
+    OCC_HOUR,
+    // location
+    DIVISION,
+    LOCATION_TYPE,
+    PREMISES_TYPE,
+    NEIGHBOURHOOD_158,
+    LONG_WGS84,
+    LAT_WGS84,
+  } = e.features[0].properties;
+  const defaultHTML = module.defaultPopupHTML(`
+    <div class="space-y-1 text-sm lg:text:base">
+      <p class="font-bold">${NEIGHBOURHOOD_158}</p>
+      <p>${PREMISES_TYPE}: ${LOCATION_TYPE}</p>
+      <p>${OCC_MONTH} ${OCC_DAY} ${OCC_YEAR}</p>
+    </div>
+  `);
+  module.showPopup(
+    new mapboxgl.Popup({
+      anchor: "left",
+      closeButton: false,
+      focusAfterOpen: false,
+      maxWidth: window.innerWidth < 1024 ? "250px" : "300px",
+      offset: 15,
+    })
+      .setLngLat(e.lngLat)
+      .setHTML(defaultHTML)
+  );
+  const z = module.map.getZoom();
+  module.map.easeTo({
+    center: e.lngLat,
+    duration: 2500,
+    offset: window.innerWidth < 1024 ? [-100, 0] : [-30, 0],
+    zoom: z < 17.5 ? z * 1.05 : z,
+  });
 }
 
 function displayData() {
@@ -442,9 +127,19 @@ function displayData() {
     source: "auto-theft",
     type: "circle",
     paint: {
-      "circle-color": "#E2871F",
+      "circle-color": "#D32360",
       "circle-opacity": 0.9,
-      "circle-radius": 10,
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 5, 20, 10],
+      "circle-stroke-color": module.isDarkMode() ? "#F9FAFB" : "#E5E8EB",
+      "circle-stroke-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        10,
+        2,
+        20,
+        3,
+      ],
     },
   });
   module.handleCursor("auto-theft", showPopup);
@@ -471,19 +166,19 @@ function countData(data, countBy, property) {
   console.log(output);
 }
 
+const mappable = {
+  type: "FeatureCollection",
+  features: [],
+};
+const noGood = [];
+
 fetch(
   "https://media.geomodul.us/articles/auto-thefts-2022/Auto_Theft_Open_Data.geojson"
 )
   .then((r) => r.json())
   .then((d) => {
-    // countData(d, "OCC_YEAR");
+    // countData(d, "NEIGHBOURHOOD_158");
     // countData(d, "PREMISES_TYPE", "LOCATION_TYPE");
-
-    const mappable = {
-      type: "FeatureCollection",
-      features: [],
-    };
-    const noGood = [];
     d.features.forEach((f) => {
       if (
         f.properties.OCC_YEAR < 2014 ||
@@ -498,12 +193,10 @@ fetch(
       }
       mappable.features.push(f);
     });
-
     module.addSource("auto-theft", {
       cluster: true,
-      clusterMaxZoom: 15, // Max zoom to cluster points on
+      clusterMaxZoom: 17, // Max zoom to cluster points on
       clusterRadius: 35, // Radius of each cluster when clustering points (defaults to 50)
-      // clusterRadius: window.innerWidth < 1024 ? 20 : 50,
       data: mappable,
       filter: ["==", ["get", "OCC_YEAR"], 2022],
       type: "geojson",
@@ -512,19 +205,20 @@ fetch(
   })
   .catch((e) => console.error(e));
 
-function createBarGraph(data) {
+function createBarGraph(data, id) {
   // Set the dimensions and margins of the graph
-  const parentElement = document.getElementById("thefts-by-year");
+  const parentElement = document.getElementById(id);
   const width = parentElement.offsetWidth;
   const height = 400;
   const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 
   // Append the SVG element to the parent element
   const svg = d3
-    .select("#thefts-by-year")
+    .select(`#${id}`)
     .append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("font-family", "monospace");
 
   // Calculate the chart width and height
   const chartWidth = width - margin.left - margin.right;
@@ -552,10 +246,11 @@ function createBarGraph(data) {
   chart
     .append("g")
     .attr("transform", "translate(0," + chartHeight + ")")
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(x))
+    .style("font-family", "monospace");
 
   // Create the y-axis
-  chart.append("g").call(d3.axisLeft(y));
+  chart.append("g").call(d3.axisLeft(y)).style("font-family", "monospace");
 
   // Create the bars
   chart
@@ -588,7 +283,6 @@ function createLineGraph(data, id) {
   const margin = { top: 20, right: 30, bottom: 30, left: 40 };
   const parentWidth = document.getElementById(id).getBoundingClientRect().width;
   const width = parentWidth - margin.left - margin.right;
-  // const width = 600 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
   // Create the SVG element
@@ -598,7 +292,8 @@ function createLineGraph(data, id) {
     .attr("width", "100%") // Set width to 100% of parent element
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .style("font-family", "monospace");
 
   // Set up the scales for x and y axes
   const x = d3
@@ -624,7 +319,17 @@ function createLineGraph(data, id) {
     .curve(d3.curveMonotoneX);
 
   // Create a color scale for the different locations
-  const color = d3.scaleOrdinal(d3.schemeCategory10);
+  const customColors = [
+    "#E2871F",
+    "#FFD515",
+    "#00A168",
+    "#00B1C1",
+    "#108DF6",
+    "#7035E6",
+    "#D32360",
+    "#ED3242",
+  ];
+  const color = d3.scaleOrdinal().range(customColors);
 
   // Draw the line for each location
   Object.keys(dataArray[0]).forEach((key) => {
@@ -645,10 +350,11 @@ function createLineGraph(data, id) {
   svg
     .append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // Use d3.format("d") to format the tick labels as plain numbers
+    .call(d3.axisBottom(x).tickFormat(d3.format("d")))
+    .style("font-family", "monospace"); // Use d3.format("d") to format the tick labels as plain numbers
 
   // Add the y axis
-  svg.append("g").call(d3.axisLeft(y));
+  svg.append("g").call(d3.axisLeft(y)).style("font-family", "monospace");
 
   // Add a legend
   const legend = svg
@@ -671,19 +377,111 @@ function createLineGraph(data, id) {
         .attr("x", 20)
         .attr("y", i * 20 + 10)
         .attr("dy", "0.35em")
-        .attr("fill", "#FFF")
+        .attr("fill", module.isDarkMode() ? "#FFF" : "#000")
         .text(key);
     }
   });
 }
 
+function createTop10BarGraph(data, id, color, fontColor) {
+  // Set the dimensions and margins of the graph
+  const parentElement = document.getElementById(id);
+  const width = parentElement.offsetWidth;
+  const height = 400;
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+
+  // Append the SVG element to the parent element
+  const svg = d3
+    .select(`#${id}`)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .style("font-family", "monospace");
+
+  // Calculate the chart width and height
+  const chartWidth = width - margin.left - margin.right;
+  const chartHeight = height - margin.top - margin.bottom;
+
+  // Create a scale for the x-axis
+  const x = d3
+    .scaleBand()
+    .range([0, chartWidth])
+    .padding(0.1)
+    .domain(Object.keys(data));
+
+  // Create a scale for the y-axis
+  const y = d3
+    .scaleLinear()
+    .range([chartHeight, 0])
+    .domain([0, d3.max(Object.values(data))]);
+
+  // Create the chart group and move it to the appropriate margin
+  const chart = svg
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Create the bars
+  chart
+    .selectAll(".bar")
+    .data(Object.entries(data))
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", function (d) {
+      return x(d[0]);
+    })
+    .attr("y", function (d) {
+      return y(d[1]);
+    })
+    .attr("width", x.bandwidth())
+    .attr("height", function (d) {
+      return chartHeight - y(d[1]);
+    })
+    .attr("fill", color); // Set the fill color of the bars
+
+  // Create the x-axis
+  chart
+    .append("g")
+    .attr("class", "x-axis")
+    .attr("transform", "translate(0," + chartHeight + ")")
+    .call(d3.axisBottom(x));
+
+  // Create the y-axis
+  chart.append("g").call(d3.axisLeft(y)).style("font-family", "monospace");
+
+  // Select the x-axis labels
+  const xLabels = chart.selectAll(".x-axis .tick text");
+
+  // Apply the necessary CSS style
+  xLabels
+    .style("text-anchor", "start")
+    .attr("transform", "rotate(-90)")
+    .attr("x", 20)
+    .attr("y", 0)
+    .attr("dy", ".35em")
+    .style("color", fontColor)
+    .style("font-size", "14px")
+    .style("font-family", "monospace");
+}
+
 fetch("https://media.geomodul.us/articles/auto-thefts-2022/graph-data.json")
   .then((r) => r.json())
   .then((d) => {
-    console.log(d);
-    setTimeout(() => {
-      createBarGraph(d["thefts-by-year"]);
-      createLineGraph(d["premises-type-by-year"], "premises-type-by-year");
-    }, 0);
+    // setTimeout(() => {
+    createBarGraph(d["thefts-by-year"], "thefts-by-year");
+    createLineGraph(d["premises-type-by-year"], "premises-type-by-year");
+    createTop10BarGraph(
+      d["thefts-top-10-neighbourhoods-2022"],
+      "thefts-top-10-neighbourhoods-2022",
+      "#ED3242",
+      module.isDarkMode() ? "#FFF" : "#000"
+    );
+    createTop10BarGraph(
+      d["thefts-bottom-10-neighbourhoods-2022"],
+      "thefts-bottom-10-neighbourhoods-2022",
+      "#FFD515",
+      "#000"
+    );
+    // }, 0);
   })
   .catch((e) => console.error(e));
