@@ -1,210 +1,3 @@
-function showPopup(e) {
-  const {
-    // occurene
-    OCC_DATE,
-    OCC_YEAR,
-    OCC_MONTH,
-    OCC_DAY,
-    OCC_DOY,
-    OCC_DOW,
-    OCC_HOUR,
-    // location
-    DIVISION,
-    LOCATION_TYPE,
-    PREMISES_TYPE,
-    NEIGHBOURHOOD_158,
-    LONG_WGS84,
-    LAT_WGS84,
-  } = e.features[0].properties;
-  const defaultHTML = module.defaultPopupHTML(`
-    <div class="space-y-1 text-sm lg:text:base">
-      <p class="font-bold">${NEIGHBOURHOOD_158}</p>
-      <p>${PREMISES_TYPE}: ${LOCATION_TYPE}</p>
-      <p>${OCC_MONTH} ${OCC_DAY} ${OCC_YEAR}</p>
-    </div>
-  `);
-  module.showPopup(
-    new mapboxgl.Popup({
-      anchor: "left",
-      closeButton: false,
-      focusAfterOpen: false,
-      maxWidth: window.innerWidth < 1024 ? "250px" : "300px",
-      offset: 15,
-    })
-      .setLngLat(e.lngLat)
-      .setHTML(defaultHTML)
-  );
-  const z = module.map.getZoom();
-  module.map.easeTo({
-    center: e.lngLat,
-    duration: 2500,
-    offset: window.innerWidth < 1024 ? [-100, 0] : [-30, 0],
-    zoom: z < 17.5 ? z * 1.05 : z,
-  });
-}
-
-function displayData() {
-  module.addFeatureLayer({
-    id: "clusters",
-    filter: ["has", "point_count"],
-    source: "auto-theft",
-    type: "circle",
-    paint: {
-      "circle-opacity": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10,
-        0.75,
-        15,
-        0.5,
-      ],
-      "circle-color": [
-        "step",
-        ["get", "point_count"],
-        "#FCE513", // "#EAA136",
-        25,
-        "#FEBD0B", // "#E69222",
-        50,
-        "#E69222", // "#E2871F",
-        100,
-        "#DC791C", // "#DC791C",
-        250,
-        "#FC3C43", // "#D56B19",
-        500,
-        "#DB283B", // "#CA5416",
-      ],
-      "circle-radius": [
-        "step",
-        ["get", "point_count"],
-        20,
-        25,
-        25,
-        50,
-        30,
-        100,
-        35,
-        250,
-        40,
-        500,
-        50,
-      ],
-    },
-  });
-  module.handleCursor("clusters", (e) => {
-    const features = module.map.queryRenderedFeatures(e.point, {
-      layers: ["clusters"],
-    });
-    const clusterId = features[0].properties.cluster_id;
-    module.map
-      .getSource("auto-theft")
-      .getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (err) return;
-        module.map.easeTo({
-          center: features[0].geometry.coordinates,
-          duration: 2500,
-          zoom: zoom,
-        });
-      });
-  });
-  module.addVizLayer({
-    id: "labels",
-    filter: ["has", "point_count"],
-    source: "auto-theft",
-    type: "symbol",
-    layout: {
-      "text-field": ["get", "point_count_abbreviated"],
-      "text-font": ["JetBrains Mono Regular", "Arial Unicode MS Regular"],
-      "text-size": ["interpolate", ["linear"], ["zoom"], 10, 14, 20, 18],
-    },
-    paint: {
-      "text-color": module.isDarkMode() ? "#F0F2F4" : "#141516",
-    },
-  });
-  module.addFeatureLayer({
-    id: "auto-theft",
-    filter: ["!", ["has", "point_count"]],
-    source: "auto-theft",
-    type: "circle",
-    paint: {
-      "circle-color": "#D32360",
-      "circle-opacity": 0.9,
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 5, 20, 10],
-      "circle-stroke-color": module.isDarkMode() ? "#F9FAFB" : "#E5E8EB",
-      "circle-stroke-width": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10,
-        2,
-        20,
-        3,
-      ],
-    },
-  });
-  module.handleCursor("auto-theft", showPopup);
-}
-
-function countData(data, countBy, property) {
-  const output = {};
-  data.features.forEach((f) => {
-    // filter
-    if (f.properties.OCC_YEAR != 2022) return;
-    // if (f.properties.OCC_YEAR < 2014 || f.properties.OCC_YEAR == null) return;
-    if (!property) {
-      // tally all thefts
-      if (!output[f.properties[countBy]]) output[f.properties[countBy]] = 0;
-      output[f.properties[countBy]]++;
-    } else {
-      // tally by property
-      if (!output[f.properties[countBy]]) output[f.properties[countBy]] = {};
-      if (!output[f.properties[countBy]][f.properties[property]])
-        output[f.properties[countBy]][f.properties[property]] = 0;
-      output[f.properties[countBy]][f.properties[property]]++;
-    }
-  });
-  console.log(output);
-}
-
-const mappable = {
-  type: "FeatureCollection",
-  features: [],
-};
-const noGood = [];
-
-fetch(
-  "https://media.geomodul.us/articles/auto-thefts-2022/Auto_Theft_Open_Data.geojson"
-)
-  .then((r) => r.json())
-  .then((d) => {
-    // countData(d, "NEIGHBOURHOOD_158");
-    // countData(d, "PREMISES_TYPE", "LOCATION_TYPE");
-    d.features.forEach((f) => {
-      if (
-        f.properties.OCC_YEAR < 2014 ||
-        f.properties.OCC_YEAR == null ||
-        f.geometry.coordinates[0] < -79.9 ||
-        f.geometry.coordinates[0] > -79 ||
-        f.geometry.coordinates[1] > 43.9 ||
-        f.geometry.coordinates[1] < 43
-      ) {
-        noGood.push(f);
-        return;
-      }
-      mappable.features.push(f);
-    });
-    module.addSource("auto-theft", {
-      cluster: true,
-      clusterMaxZoom: 17, // Max zoom to cluster points on
-      clusterRadius: 35, // Radius of each cluster when clustering points (defaults to 50)
-      data: mappable,
-      filter: ["==", ["get", "OCC_YEAR"], 2022],
-      type: "geojson",
-    });
-    displayData();
-  })
-  .catch((e) => console.error(e));
-
 function createBarGraph(data, id) {
   // Set the dimensions and margins of the graph
   const parentElement = document.getElementById(id);
@@ -464,10 +257,12 @@ function createTop10BarGraph(data, id, color, fontColor) {
     .style("font-family", "monospace");
 }
 
-fetch("https://media.geomodul.us/articles/auto-thefts-2022/graph-data.json")
+fetch(
+  "https://media.geomodul.us/articles/auto-thefts-2022/updated-graph-data.json"
+)
+  // fetch("/kduncan/auto-thefts-2022/updated-graph-data.json")
   .then((r) => r.json())
   .then((d) => {
-    // setTimeout(() => {
     createBarGraph(d["thefts-by-year"], "thefts-by-year");
     createLineGraph(d["premises-type-by-year"], "premises-type-by-year");
     createTop10BarGraph(
@@ -482,6 +277,179 @@ fetch("https://media.geomodul.us/articles/auto-thefts-2022/graph-data.json")
       "#FFD515",
       "#000"
     );
-    // }, 0);
+    createTop10BarGraph(
+      d["thefts-top-10-perSquareKm-2022"],
+      "thefts-top-10-perSquareKm-2022",
+      "#108DF6",
+      module.isDarkMode() ? "#FFF" : "#000"
+    );
+    createTop10BarGraph(
+      d["thefts-bottom-10-perSquareKm-2022"],
+      "thefts-bottom-10-perSquareKm-2022",
+      "#00A168",
+      module.isDarkMode() ? "#FFF" : "#000"
+    );
   })
   .catch((e) => console.error(e));
+
+const theftsByNeighbourhood = {
+  "West Humber-Clairville": 672,
+  "York University Heights": 196,
+  "Yorkdale-Glen Park": 176,
+  "Etobicoke City Centre": 162,
+  "Newtonbrook West": 155,
+  "Bedford Park-Nortown": 152,
+  "Humber Summit": 148,
+  "Glenfield-Jane Heights": 148,
+  "Clanton Park": 127,
+  "Stonegate-Queensway": 126,
+  "Morningside Heights": 116,
+  "Wexford/Maryvale": 115,
+  NSA: 110,
+  Downsview: 109,
+  "Mount Olive-Silverstone-Jamestown": 106,
+  "Oakdale-Beverley Heights": 100,
+  Humbermede: 100,
+  "Kingsview Village-The Westway": 99,
+  "Willowridge-Martingrove-Richview": 99,
+  Milliken: 95,
+  "Lawrence Park South": 92,
+  "Woburn North": 92,
+  "Rosedale-Moore Park": 91,
+  Weston: 88,
+  "Pelmo Park-Humberlea": 87,
+  "Eringate-Centennial-West Deane": 85,
+  Islington: 85,
+  "St.Andrew-Windfields": 79,
+  "Lawrence Park North": 75,
+  "Westminster-Branson": 75,
+  "Tam O'Shanter-Sullivan": 73,
+  "Forest Hill South": 73,
+  "South Riverdale": 71,
+  "Golfdale-Cedarbrae-Woburn": 71,
+  "Agincourt South-Malvern West": 71,
+  "Bendale-Glen Andrew": 71,
+  "Edenbridge-Humber Valley": 71,
+  "Leaside-Bennington": 70,
+  "Bathurst Manor": 70,
+  "High Park-Swansea": 66,
+  "Black Creek": 65,
+  "Dorset Park": 63,
+  "Wellington Place": 62,
+  "Clairlea-Birchmount": 61,
+  "Brookhaven-Amesbury": 61,
+  "Lansing-Westgate": 60,
+  Alderwood: 59,
+  "Princess-Rosethorn": 59,
+  "Don Valley Village": 58,
+  Annex: 57,
+  "Bridle Path-Sunnybrook-York Mills": 57,
+  "Elms-Old Rexdale": 56,
+  "Kingsway South": 56,
+  "Englemount-Lawrence": 56,
+  "Oakwood Village": 55,
+  "West Rouge": 55,
+  "Mount Pleasant East": 54,
+  "Mimico-Queensway": 54,
+  "West Hill": 54,
+  "Moss Park": 52,
+  "Rexdale-Kipling": 52,
+  "Rockcliffe-Smythe": 52,
+  "Humewood-Cedarvale": 52,
+  "Newtonbrook East": 51,
+  "Thistletown-Beaumond Heights": 51,
+  "The Beaches": 51,
+  "Malvern West": 51,
+  Morningside: 51,
+  "Banbury-Don Mills": 50,
+  "Bayview Village": 48,
+  "Agincourt North": 46,
+  "Briar Hill-Belgravia": 45,
+  "Danforth East York": 45,
+  "Humber Bay Shores": 45,
+  "Birchcliffe-Cliffside": 43,
+  "Downtown Yonge East": 42,
+  "Maple Leaf": 42,
+  "East L'Amoreaux": 42,
+  "Kennedy Park": 41,
+  "Eglinton East": 41,
+  "Willowdale West": 40,
+  "Junction-Wallace Emerson": 40,
+  "Malvern East": 40,
+  "East Willowdale": 40,
+  "Junction Area": 38,
+  "Mount Dennis": 38,
+  "Highland Creek": 38,
+  Cliffcrest: 37,
+  "Forest Hill North": 36,
+  "Parkwoods-O'Connor Hills": 36,
+  Steeles: 35,
+  "Yonge-Doris": 35,
+  "East End-Danforth": 34,
+  "Yonge-Eglinton": 33,
+  "St Lawrence-East Bayfront-The Islands": 33,
+  "High Park North": 33,
+  "New Toronto": 33,
+  "Corso Italia-Davenport": 33,
+  "Kensington-Chinatown": 32,
+  Rustic: 32,
+  "Etobicoke West Mall": 31,
+  "O'Connor-Parkview": 31,
+  "South Parkdale": 30,
+  Wychwood: 30,
+  "Victoria Village": 30,
+  "Fenside-Parkwoods": 30,
+  "Long Branch": 30,
+  "Yonge-St.Clair": 29,
+  "Trinity-Bellwoods": 29,
+  "Weston-Pelham Park": 28,
+  "Casa Loma": 28,
+  "Humber Heights-Westmount": 27,
+  "L'Amoreaux West": 27,
+  "Henry Farm": 27,
+  "Markland Wood": 26,
+  "Pleasant View": 26,
+  "Yonge-Bay Corridor": 26,
+  "Keelesdale-Eglinton West": 25,
+  "Dovercourt Village": 25,
+  "Runnymede-Bloor West Village": 25,
+  "Harbourfront-CityPlace": 25,
+  "North Riverdale": 24,
+  "Centennial Scarborough": 24,
+  "Caledonia-Fairbank": 24,
+  "Thorncliffe Park": 24,
+  "Little Portugal": 23,
+  "Scarborough Village": 23,
+  "Lambton Baby Point": 22,
+  "Greenwood-Coxwell": 22,
+  Roncesvalles: 21,
+  Danforth: 21,
+  Oakridge: 21,
+  "Palmerston-Little Italy": 21,
+  "Beechborough-Greenbrook": 20,
+  "West Queen West": 19,
+  "Old East York": 19,
+  "Bendale South": 19,
+  "Woodbine-Lumsden": 19,
+  Avondale: 18,
+  "Cabbagetown-South St.James Town": 18,
+  "Woodbine Corridor": 17,
+  "Playter Estates-Danforth": 17,
+  "Flemingdon Park": 17,
+  "Bayview Woods-Steeles": 15,
+  "Fort York-Liberty Village": 15,
+  "Bay-Cloverhill": 14,
+  "North St.James Town": 14,
+  "Taylor-Massey": 14,
+  "Church-Wellesley": 14,
+  "Hillcrest Village": 14,
+  University: 13,
+  "Broadview North": 12,
+  "Regent Park": 11,
+  Ionview: 10,
+  "South Eglinton-Davisville": 10,
+  "North Toronto": 9,
+  "Dufferin Grove": 9,
+  "Blake-Jones": 8,
+  Guildwood: 7,
+};
