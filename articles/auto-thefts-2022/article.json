@@ -20,7 +20,7 @@
   "promo_start": "0001-01-01T00:00:00Z",
   "promo_until": "0001-01-01T00:00:00Z",
   "promo_wait": "0s",
-  "promo_expires": "0001-01-01T00:00:00Z",
+  "promo_expires": "2023-05-20T10:01:30.690595-04:00",
   "loc": {
     "lng": 0,
     "lat": 0
