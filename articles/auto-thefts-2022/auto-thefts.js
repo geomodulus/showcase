@@ -80,66 +80,51 @@ function addLegend() {
   const content = document.createElement("div");
   content.innerHTML = `
     <div class="space-y-1">
-      <div class="flex mb-2">
+
+      <div class="flex justify-between mb-2">
         <div class="flex items-center">
-          <div class="bg-[#D32360] h-3 mr-2 rounded-full shrink-0 w-3">
+          <div class="bg-[#D32360] border-2 border-[#E5E8EB] dark:border-[#F9FAFB] h-5 mr-2 rounded-full shrink-0 w-5">
           </div>
-          <span>Parking Infraction</span>
+          <span>Theft</span>
         </div>
         <div class="flex items-center">
-          <div class="bg-gradient-to-r from-cyan-500/50 via-blue-500/50 via-purple-500/50 to-yellow-500/50 flex justify-center items-center h-10 mr-2 rounded-full shrink-0 w-10">#
+          <div class="bg-gradient-to-r from-pink-500/50 via-cyan-500/50 via-blue-500/50 to-purple-500/50 flex justify-center items-center h-10 mr-2 rounded-full shrink-0 w-10">#
           </div>
-          <span>Multiple Infractions</span>
+          <span>Multiple Thefts</span>
         </div>
       </div>
-      <div class="flex items-center">
-        <div class="bg-[#00A168] h-2 mr-2 w-10">
-        </div>
-        <span>Bike Lanes & Cycle Tracks</span>
+
+      <div class="
+        bg-gradient-to-r
+        from-green-500
+        via-yellow-500
+        via-orange-500
+        to-red-500
+        h-10
+        rounded-sm
+        shrink-0
+        w-full
+      ">
       </div>
-      <div class="flex items-center">
-        <div class="bg-[#E2871F] h-2 mr-2 w-10">
-        </div>
-        <span>"Sharrows"</span>
+      <div class="flex items-center justify-between text-sm">
+        <span>Less</span>
+        <span class="font-bold">Thefts/km<sup>2</sup></span>
+        <span>More</span>
       </div>
-      <div class="flex items-center">
-        <div class="bg-[#ED3242] h-2 mr-2 w-10">
-        </div>
-        <span>Signed & Unmarked Routes</span>
-      </div>
-      <div class="flex items-center">
-        <div class="bg-[#7035E6]/50 h-2 mr-2 w-10">
-        </div>
-        <span>Multi-Use & Park Trails</span>
-      </div>
+      <p class="text-sm">Height indicates total number of thefts in that neighbourhood. Click to see more details.</p>
     </div>
   `;
+  module.addToLegend(content);
 
-  // module.addToLegend(content);
   module.initLegend();
   const selector = document.getElementById("year-selector");
   selector.addEventListener("change", (e) => updateViz(e.target.value));
 }
 
 function showPopup(e) {
-  // console.log(e.features.forEach(f => console.log(f.properties)));
-  const {
-    // occurene
-    OCC_DATE,
-    OCC_YEAR,
-    OCC_MONTH,
-    OCC_DAY,
-    OCC_DOY,
-    OCC_DOW,
-    OCC_HOUR,
-    // location
-    DIVISION,
-    LOCATION_TYPE,
-    PREMISES_TYPE,
-    NEIGHBOURHOOD_158,
-    LONG_WGS84,
-    LAT_WGS84,
-  } = e.features[0].properties;
+  module.clearPopups();
+  const { LOCATION_TYPE, PREMISES_TYPE, NEIGHBOURHOOD_158 } =
+    e.features[0].properties;
 
   const content = document.createElement("div");
   content.className =
@@ -186,7 +171,7 @@ function showPopup(e) {
   });
 }
 
-const opacity = ["interpolate", ["linear"], ["zoom"], 10, 0, 15, 0.5, 20, 0.75];
+const opacity = ["interpolate", ["linear"], ["zoom"], 11, 0, 14, 0.75, 20, 0.5];
 
 function displayData() {
   module.addVizLayer({
@@ -198,32 +183,24 @@ function displayData() {
       "circle-color": [
         "step",
         ["get", "point_count"],
-        "#FCE513", // "#EAA136",
-        10,
-        "#FEBD0B", // "#E69222",
-        20,
-        "#E69222", // "#E2871F",
-        40,
-        "#DC791C", // "#DC791C",
-        80,
-        "#FC3C43", // "#D56B19",
-        160,
-        "#DB283B", // "#CA5416",
+        "#00B1C1", // cyan
+        25,
+        "#108DF6", // blue
+        50,
+        "#7035E6", // purple
+        100,
+        "#D32360", // pink,
       ],
       "circle-opacity": opacity,
       "circle-radius": [
         "step",
         ["get", "point_count"],
         20,
-        10,
         25,
-        20,
         30,
+        50,
         40,
-        35,
-        80,
-        40,
-        160,
+        100,
         50,
       ],
     },
@@ -237,10 +214,13 @@ function displayData() {
       .getSource("auto-theft")
       .getClusterExpansionZoom(clusterId, (err, zoom) => {
         if (err) return;
-        module.map.easeTo({
-          center: features[0].geometry.coordinates,
-          duration: 2500,
-          zoom: zoom,
+        module.map.once("idle", () => {
+          if (module.map.getZoom() > zoom) return;
+          module.map.easeTo({
+            center: features[0].geometry.coordinates,
+            duration: 2500,
+            zoom: zoom,
+          });
         });
       });
   });
