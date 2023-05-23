@@ -1,10 +1,10 @@
 {
   "id": "549c9021-f58d-11ed-9034-c4bde51bd320",
-  "display_name": "Auto Thefts 2022",
-  "h2": "Auto Thefts 2022",
+  "display_name": "We mapped Toronto auto thefts. Here are the hardest-hit areas.",
+  "h2": "More than 8,700 vehicles were stolen in Toronto in 2022, continuing a multi-year rise.",
   "img_url": "",
   "categories": [],
-  "authors": [],
+  "authors": ["Craig Battle"],
   "camera": {
     "": {
       "center": [-79.373, 43.7079],
