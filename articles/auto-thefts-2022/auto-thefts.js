@@ -122,7 +122,7 @@ function addLegend() {
 }
 
 function showPopup(e) {
-  console.log(e.features);
+  // console.log(e.features.forEach(f => console.log(f.properties)));
   const {
     // occurene
     OCC_DATE,
@@ -142,9 +142,12 @@ function showPopup(e) {
   } = e.features[0].properties;
 
   const content = document.createElement("div");
-  content.className = "space-y-1 text-sm lg:text:base";
+  content.className =
+    "max-h-[200px] lg:max-h-[400px] space-y-1 text-sm lg:text:base";
   content.innerHTML = `
-    <p class="font-bold">${NEIGHBOURHOOD_158}</p>
+    <p class="font-bold">${
+      NEIGHBOURHOOD_158 != "NSA" ? NEIGHBOURHOOD_158 : "Other Municipality"
+    }</p>
     <p>${PREMISES_TYPE}: ${LOCATION_TYPE}</p>
   `;
 
@@ -179,54 +182,48 @@ function showPopup(e) {
     center: e.lngLat,
     duration: 2500,
     offset: window.innerWidth < 1024 ? [-100, 0] : [-30, 0],
-    zoom: z < 17.5 ? z * 1.05 : z,
+    zoom: z < 15 ? z * 1.05 : z,
   });
 }
 
+const opacity = ["interpolate", ["linear"], ["zoom"], 10, 0, 15, 0.5, 20, 0.75];
+
 function displayData() {
-  module.addFeatureLayer({
+  module.addVizLayer({
     id: "clusters",
     filter: ["has", "point_count"],
     source: "auto-theft",
     type: "circle",
     paint: {
-      "circle-opacity": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10,
-        0.75,
-        15,
-        0.5,
-      ],
       "circle-color": [
         "step",
         ["get", "point_count"],
         "#FCE513", // "#EAA136",
-        25,
+        10,
         "#FEBD0B", // "#E69222",
-        50,
+        20,
         "#E69222", // "#E2871F",
-        100,
+        40,
         "#DC791C", // "#DC791C",
-        250,
+        80,
         "#FC3C43", // "#D56B19",
-        500,
+        160,
         "#DB283B", // "#CA5416",
       ],
+      "circle-opacity": opacity,
       "circle-radius": [
         "step",
         ["get", "point_count"],
         20,
+        10,
         25,
-        25,
-        50,
+        20,
         30,
-        100,
-        35,
-        250,
         40,
-        500,
+        35,
+        80,
+        40,
+        160,
         50,
       ],
     },
@@ -259,17 +256,19 @@ function displayData() {
     },
     paint: {
       "text-color": module.isDarkMode() ? "#F0F2F4" : "#141516",
+      "text-opacity": opacity,
     },
   });
-  module.addFeatureLayer({
+  module.addVizLayer({
     id: "auto-theft",
     filter: ["!", ["has", "point_count"]],
     source: "auto-theft",
     type: "circle",
     paint: {
       "circle-color": "#D32360",
-      "circle-opacity": 0.9,
+      "circle-opacity": opacity,
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 5, 20, 10],
+      "circle-stroke-opacity": opacity,
       "circle-stroke-color": module.isDarkMode() ? "#F9FAFB" : "#E5E8EB",
       "circle-stroke-width": [
         "interpolate",
@@ -286,35 +285,9 @@ function displayData() {
   addLegend();
 }
 
-function countData(data, countBy, property) {
-  const output = {};
-  data.features.forEach((f) => {
-    // filter
-    // if (f.properties.OCC_YEAR != 2022) return;
-    // if (f.properties.OCC_YEAR < 2014 || f.properties.OCC_YEAR == null) return;
-    if (!property) {
-      // tally all thefts
-      if (!output[f.properties[countBy]]) output[f.properties[countBy]] = 0;
-      output[f.properties[countBy]]++;
-    } else {
-      // tally by property
-      if (!output[f.properties[countBy]]) output[f.properties[countBy]] = {};
-      if (!output[f.properties[countBy]][f.properties[property]])
-        output[f.properties[countBy]][f.properties[property]] = 0;
-      output[f.properties[countBy]][f.properties[property]]++;
-    }
-  });
-  console.log(output);
-}
-
-fetch(
-  url
-  // "/kduncan/auto-thefts-2022/auto-theft-2014-2022--no-doubles.geojson"
-)
+fetch(url)
   .then((r) => r.json())
   .then((d) => {
-    // countData(d, "NEIGHBOURHOOD_158", "OCC_YEAR");
-    // countData(d, "OCC_YEAR", "PREMISES_TYPE");
     d.features.forEach((f) => {
       if (
         f.geometry.coordinates[0] < -79.9 ||
@@ -330,9 +303,8 @@ fetch(
     module.addSource("auto-theft", {
       cluster: true,
       clusterMaxZoom: 17, // Max zoom to cluster points on
-      clusterRadius: 35, // Radius of each cluster when clustering points (defaults to 50)
+      clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50)
       data: mappable,
-      // filter: ["==", ["get", "OCC_YEAR"], 2022],
       type: "geojson",
     });
     updateViz(2022);

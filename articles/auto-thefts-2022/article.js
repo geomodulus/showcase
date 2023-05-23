@@ -260,7 +260,6 @@ function createTop10BarGraph(data, id, color, fontColor) {
 fetch(
   "https://media.geomodul.us/articles/auto-thefts-2022/updated-graph-data.json"
 )
-  // fetch("/kduncan/auto-thefts-2022/updated-graph-data.json")
   .then((r) => r.json())
   .then((d) => {
     createBarGraph(d["thefts-by-year"], "thefts-by-year");

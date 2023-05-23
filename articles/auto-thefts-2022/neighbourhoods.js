@@ -1,88 +1,202 @@
-function calculateAreas(neighbourhoods) {
-  const newGeojson = {
-    type: "FeatureCollection",
-    features: [],
-  };
-  neighbourhoods.forEach((n) => {
-    const area = turf.area(n);
-    const feature = {
-      geometry: n.geometry,
-      properties: {
-        totalArea: area, // area in square meters
-        ...n.properties,
-      },
-      type: "Feature",
-    };
-    newGeojson.features.push(feature);
-  });
-  console.log(newGeojson);
+module.hideLayer("settlement-subdivision-label");
+module.hideLayer("settlement-minor-label");
+module.hideLayer("settlement-major-label");
+
+const egObj = {
+  2014: 29,
+  2015: 22,
+  2016: 15,
+  2017: 24,
+  2018: 37,
+  2019: 49,
+  2020: 36,
+  2021: 72,
+  2022: 116,
+  totalArea: 28971290.225709677,
+  _id: 19,
+  AREA_ID: 2502348,
+  AREA_ATTR_ID: 26022863,
+  PARENT_AREA_ID: 0,
+  AREA_SHORT_CODE: "144",
+  AREA_LONG_CODE: "144",
+  AREA_NAME: "Morningside Heights",
+  AREA_DESC: "Morningside Heights (144)",
+  CLASSIFICATION: "Not an NIA or Emerging Neighbourhood",
+  CLASSIFICATION_CODE: "NA",
+  OBJECTID: 17825025,
+  "perKm2-2014": 0.001000990973272735,
+  "perKm2-2015": 0.0007593724624827645,
+  "perKm2-2016": 0.0005177539516927939,
+  "perKm2-2017": 0.0008284063227084703,
+  "perKm2-2018": 0.0012771264141755584,
+  "perKm2-2019": 0.0016913295755297934,
+  "perKm2-2020": 0.0012426094840627055,
+  "perKm2-2021": 0.002485218968125411,
+  "perKm2-2022": 0.00400396389309094,
+};
+
+function updateViz(year) {
+  const perKm2 = `perKm2-${year}`;
+  module.map.setPaintProperty("neighbourhoods-fill", "fill-extrusion-color", [
+    "case",
+    [">", ["get", perKm2], limits.highestPerKm * 0.5],
+    "#ED3242",
+    [">", ["get", perKm2], limits.highestPerKm * 0.25],
+    "#E2871F",
+    [">", ["get", perKm2], limits.highestPerKm * 0.125],
+    "#FFD515",
+    "#108DF6",
+  ]);
+  module.map.setPaintProperty("neighbourhoods-fill", "fill-extrusion-height", [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    10,
+    ["*", ["get", year], 10],
+    20,
+    ["*", ["get", year], 1],
+  ]);
 }
 
-function addTheftsByYear(neighbourhoods) {
-  const newGeojson = {
-    type: "FeatureCollection",
-    features: [],
-  };
-  neighbourhoods.forEach((n) => {
-    const feature = {
-      geometry: n.geometry,
-      properties: {
-        ...n.properties,
-        ...theftsByYear[n.properties.AREA_NAME],
-      },
-      type: "Feature",
-    };
-    newGeojson.features.push(feature);
+const interval = setInterval(() => {
+  const selector = document.getElementById("year-selector");
+  if (selector) {
+    selector.addEventListener("change", (e) => updateViz(e.target.value));
+    clearInterval(interval);
+  }
+}, 1000);
+
+function showDetails(e) {
+  // console.log(e.features[0].properties);
+
+  const {
+    AREA_NAME,
+    "perKm2-2022": perKm2_2022,
+    2022: total2022,
+  } = e.features[0].properties;
+
+  const content = document.createElement("div");
+  content.className = "space-y-1 text-sm lg:text:base";
+  content.innerHTML = `
+    <h3 class="font-bold">${AREA_NAME}</h3>
+    <p>Thefts/km<sup>2</sup>: ${perKm2_2022.toFixed(4)}</p>
+    <p>Total Thefts: ${total2022}</p>
+  `;
+
+  const container = document.createElement("div");
+  container.appendChild(content);
+
+  const bbox = JSON.parse(e.features[0].properties.bbox);
+  const center = turf.centerOfMass(turf.bboxPolygon(bbox));
+  const defaultHTML = module.defaultPopupHTML(container.innerHTML);
+
+  module.showPopup(
+    new mapboxgl.Popup({
+      anchor: "bottom",
+      closeButton: false,
+      focusAfterOpen: false,
+      maxWidth: window.innerWidth < 1024 ? "250px" : "300px",
+      offset: 10,
+    })
+      .setLngLat(center.geometry.coordinates)
+      .setHTML(defaultHTML)
+  );
+  // const z = module.map.getZoom();
+  module.map.fitBounds(bbox, {
+    bearing: module.map.getBearing(),
+    duration: 2500,
+    padding: window.innerWidth < 1024 ? 0 : 50,
+    pitch: module.map.getPitch(),
   });
-  console.log(newGeojson);
 }
 
-function theftsPerSquareKm(neighbourhoods) {
-  const newGeojson = {
-    type: "FeatureCollection",
-    features: [],
-  };
-  neighbourhoods.forEach((n) => {
-    const perYear = {};
+const limits = {
+  highestTotal: 0,
+  highestPerKm: 0,
+};
+
+function addNeighbourhoods() {
+  module.addUnderglowLayer({
+    id: "neighbourhoods-trigger",
+    source: "neighbourhoods",
+    type: "fill",
+    paint: {
+      "fill-color": "#108DF6",
+      // "fill-opacity": ["/", ["get", "perKm2-2022"], limits.highestPerKm],
+      "fill-opacity": 0,
+    },
+  });
+  module.addFeatureLayer({
+    id: "neighbourhoods-line",
+    source: "neighbourhoods",
+    type: "line",
+    paint: {
+      "line-color": "#108DF6",
+      "line-opacity": 0.5,
+      "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 20, 4],
+    },
+  });
+  module.addFeatureLayer({
+    id: "neighbourhoods-fill",
+    source: "neighbourhoods",
+    type: "fill-extrusion",
+    paint: {
+      "fill-extrusion-base": 0,
+      "fill-extrusion-color": [
+        "case",
+        [">", ["get", "perKm2-2022"], limits.highestPerKm * 0.5],
+        "#ED3242",
+        [">", ["get", "perKm2-2022"], limits.highestPerKm * 0.25],
+        "#E2871F",
+        [">", ["get", "perKm2-2022"], limits.highestPerKm * 0.125],
+        "#FFD515",
+        "#108DF6",
+      ],
+      "fill-extrusion-height": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        10,
+        ["*", ["get", "2022"], 10],
+        20,
+        ["*", ["get", "2022"], 1],
+      ],
+      "fill-extrusion-opacity": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        10,
+        0.5,
+        15,
+        0,
+      ],
+    },
+  });
+  module.handleCursor("neighbourhoods-trigger", showDetails);
+}
+
+function getLimits(features) {
+  features.forEach((f) => {
     [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].forEach((year) => {
-      const perSqKm = n.properties[year] / (n.properties.totalArea / 1000);
-      perYear[`perKm2-${year}`] = perSqKm;
+      if (f.properties[year] > limits.highestTotal) {
+        limits.highestTotal = f.properties[year];
+      }
+      if (f.properties[`perKm2-${year}`] > limits.highestPerKm) {
+        limits.highestPerKm = f.properties[`perKm2-${year}`];
+      }
     });
-    const feature = {
-      geometry: n.geometry,
-      properties: {
-        ...n.properties,
-        ...perYear,
-      },
-      type: "Feature",
-    };
-    newGeojson.features.push(feature);
   });
-  console.log(newGeojson);
-}
-
-function neighbourhoodsByPerKm2(neighbourhoods) {
-  const list = [];
-  neighbourhoods.forEach((n) => {
-    const perYear = {
-      neighbourhood: n.properties.AREA_NAME,
-      "perKm2-2022": n.properties["perKm2-2022"],
-    };
-
-    list.push(perYear);
-  });
-  list.sort((a, b) => b["perKm2-2022"] - a["perKm2-2022"]);
-  console.log(list);
 }
 
 fetch(url)
-  // fetch("/kduncan/auto-thefts-2022/updated-neighbourhoods.geojson")
   .then((r) => r.json())
   .then((d) => {
-    // module.addSource("neighbourhoods", {
-    //   data: d,
-    //   type: "geojson",
-    // });
+    getLimits(d.features);
+    module.addSource("neighbourhoods", {
+      data: d,
+      type: "geojson",
+    });
+    addNeighbourhoods();
   })
   .catch((e) => console.error(e));
 
