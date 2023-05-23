@@ -2,9 +2,9 @@
   "id": "549c9021-f58d-11ed-9034-c4bde51bd320",
   "display_name": "We mapped Toronto auto thefts. Here are the hardest-hit areas.",
   "h2": "More than 8,700 vehicles were stolen in Toronto in 2022, continuing a multi-year rise.",
-  "img_url": "",
-  "categories": [],
-  "authors": ["Craig Battle"],
+  "img_url": "https://media.geomodul.us/img/toronto-police-headquarters.jpg",
+  "categories": ["Crime Data"],
+  "authors": ["Torontoverse Staff"],
   "camera": {
     "": {
       "center": [-79.373, 43.7079],
@@ -16,8 +16,12 @@
       "zoom": 10.4
     }
   },
-  "pub_date": "2023-05-25",
+  "pub_date": "2023-05-24",
   "code_credit": "Kyle Duncan",
+  "related": [
+    "ae5c6f24-ffc1-11eb-b867-244bfe5bf61a",
+    "332c22da-d76c-445b-b52f-582f54b78791"
+  ],
   "promo_start": "0001-01-01T00:00:00Z",
   "promo_until": "0001-01-01T00:00:00Z",
   "promo_wait": "0s",
