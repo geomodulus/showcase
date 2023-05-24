@@ -1,3 +1,43 @@
+const locations = [
+  "Streets, Roads, Highways (Bicycle Path, Private Road)",
+  "Parking Lots (Apt., Commercial Or Non-Commercial)",
+  "Single Home, House (Attach Garage, Cottage, Mobile)",
+  "Apartment (Rooming House, Condo)",
+  "Private Property Structure (Pool, Shed, Detached Garage)",
+  "Other Commercial / Corporate Places (For Profit, Warehouse, Corp. Bldg",
+  "Dealership (Car, Motorcycle, Marine, Trailer, Etc.)",
+  "Other Non Commercial / Corporate Places (Non-Profit, Gov'T, Firehall)",
+  "Go Station",
+  "Bank And Other Financial Institutions (Money Mart, Tsx)",
+  "Gas Station (Self, Full, Attached Convenience)",
+  "Ttc Subway Station",
+  "Commercial Dwelling Unit (Hotel, Motel, B & B, Short Term Rental)",
+  "Bar / Restaurant",
+  "Convenience Stores",
+  "Hospital / Institutions / Medical Facilities (Clinic, Dentist, Morgue)",
+  "Group Homes (Non-Profit, Halfway House, Social Agency)",
+  "Open Areas (Lakes, Parks, Rivers)",
+  "Unknown",
+  "Construction Site (Warehouse, Trailer, Shed)",
+  "Go Train",
+  "Police / Courts (Parole Board, Probation Office)",
+  "Schools During Supervised Activity",
+  "Religious Facilities (Synagogue, Church, Convent, Mosque)",
+  "Universities / Colleges",
+  "Homeless Shelter / Mission",
+  "Schools During Un-Supervised Activity",
+  "Cargo Train",
+  "Ttc Admin Or Support Facility",
+  "Retirement Home",
+  "Other Passenger Train Station",
+  "Nursing Home",
+  "Other Train Yard",
+  "Ttc Subway Tunnel / Outdoor Tracks",
+  "Ttc Bus Garage",
+  "Ttc Light Rail Transit Station",
+  "Community Group Home",
+];
+
 let yearTimer;
 function updateDataLabel(year) {
   if (["", "sm", "md"].includes(module.currentBreakpoint())) {
@@ -32,7 +72,7 @@ const mappable = {
 const noGood = [];
 
 function filterData(year) {
-  const thefts = mappable.features.filter((f) => f.properties.OCC_YEAR == year);
+  const thefts = mappable.features.filter((f) => f.properties.y == year);
   return {
     type: "FeatureCollection",
     features: thefts,
@@ -114,27 +154,44 @@ function addLegend() {
 
 function showPopup(e) {
   module.clearPopups();
-  const { LOCATION_TYPE, PREMISES_TYPE, NEIGHBOURHOOD_158 } =
-    e.features[0].properties;
+  const { l, p, n } = e.features[0].properties;
 
   const content = document.createElement("div");
   content.className =
     "max-h-[200px] lg:max-h-[400px] space-y-1 text-sm lg:text:base";
   content.innerHTML = `
-    <p class="font-bold">${
-      NEIGHBOURHOOD_158 != "NSA" ? NEIGHBOURHOOD_158 : "Other Municipality"
-    }</p>
-    <p>${PREMISES_TYPE}: ${LOCATION_TYPE}</p>
+    <p class="font-bold">${n != "NSA" ? n : "Other Municipality"}</p>
+    <p>${p}: ${locations[l]}</p>
   `;
 
   const eventList = document.createElement("ul");
+
   const added = [];
+  const toAdd = [];
+
   e.features.forEach((f) => {
-    if (added.includes(f.properties.EVENT_UNIQUE_ID)) return;
+    if (added.includes(f.properties.i)) return;
+    toAdd.push(f);
+    added.push(f.properties.i);
+  });
+
+  // sort toAdd by date
+  toAdd.sort((a, b) => {
+    const aDate = new Date(a.properties.d);
+    const bDate = new Date(b.properties.d);
+    return aDate - bDate;
+  });
+  toAdd.forEach((f) => {
     const event = document.createElement("li");
-    event.innerText = `${f.properties.OCC_MONTH} ${f.properties.OCC_DAY} ${f.properties.OCC_YEAR}`;
+    const date = new Date(f.properties.d);
+    const string = date.toLocaleDateString("default", {
+      weekday: "short",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    event.innerText = string;
     eventList.appendChild(event);
-    added.push(f.properties.EVENT_UNIQUE_ID);
   });
   content.appendChild(eventList);
 
