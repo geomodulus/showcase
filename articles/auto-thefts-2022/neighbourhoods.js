@@ -8,6 +8,16 @@ function updateViz(year) {
   module.clearPopups();
   currentYear = year;
   const perKm2 = `perKm2-${year}`;
+  module.map.setPaintProperty("neighbourhoods-trigger", "fill-color", [
+    "case",
+    [">", ["get", perKm2], limits.highestPerKm * 0.5],
+    "#ED3242",
+    [">", ["get", perKm2], limits.highestPerKm * 0.25],
+    "#E2871F",
+    [">", ["get", perKm2], limits.highestPerKm * 0.125],
+    "#FFD515",
+    "#108DF6",
+  ]);
   module.map.setPaintProperty("neighbourhoods-fill", "fill-extrusion-color", [
     "case",
     [">", ["get", perKm2], limits.highestPerKm * 0.5],
@@ -95,15 +105,15 @@ function showDetails(e) {
       closeButton: false,
       focusAfterOpen: false,
       maxWidth: window.innerWidth < 1024 ? "250px" : "300px",
-      offset: 10,
+      offset: 30,
     })
       .setLngLat(center.geometry.coordinates)
       .setHTML(defaultHTML)
   );
-  // const z = module.map.getZoom();
   module.map.fitBounds(bbox, {
     bearing: module.map.getBearing(),
     duration: 2500,
+    offset: window.innerWidth < 1024 ? [0, 30] : [0, 0],
     padding: window.innerWidth < 1024 ? 0 : 50,
     pitch: module.map.getPitch(),
   });
@@ -131,7 +141,6 @@ function addNeighbourhoods() {
         "#FFD515",
         "#108DF6",
       ],
-      // "fill-opacity": ["/", ["get", "perKm2-2022"], limits.highestPerKm],
       "fill-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0, 14, 0.25],
     },
   });
@@ -191,9 +200,9 @@ function addNeighbourhoods() {
         "interpolate",
         ["linear"],
         ["zoom"],
-        8,
+        10.5,
         0.75,
-        14,
+        11,
         0,
       ],
     },

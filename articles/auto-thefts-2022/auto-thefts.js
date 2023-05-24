@@ -80,8 +80,17 @@ function addLegend() {
   const content = document.createElement("div");
   content.innerHTML = `
     <div class="space-y-1">
+      
+      <div class=" bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500 h-6 rounded-sm shrink-0 w-full"></div>
+      <div class="flex items-center justify-between text-sm">
+        <span>Less</span>
+        <span class="font-bold">Thefts/km<sup>2</sup></span>
+        <span>More</span>
+      </div>
 
-      <div class="flex justify-between mb-2">
+      <p class="mt-2 text-sm">Height indicates total number of thefts in that neighbourhood. Click to see more details.</p>
+
+      <div class="flex justify-between">
         <div class="flex items-center">
           <div class="bg-[#D32360] border-2 border-[#E5E8EB] dark:border-[#F9FAFB] h-5 mr-2 rounded-full shrink-0 w-5">
           </div>
@@ -94,24 +103,6 @@ function addLegend() {
         </div>
       </div>
 
-      <div class="
-        bg-gradient-to-r
-        from-green-500
-        via-yellow-500
-        via-orange-500
-        to-red-500
-        h-10
-        rounded-sm
-        shrink-0
-        w-full
-      ">
-      </div>
-      <div class="flex items-center justify-between text-sm">
-        <span>Less</span>
-        <span class="font-bold">Thefts/km<sup>2</sup></span>
-        <span>More</span>
-      </div>
-      <p class="text-sm">Height indicates total number of thefts in that neighbourhood. Click to see more details.</p>
     </div>
   `;
   module.addToLegend(content);
@@ -171,7 +162,19 @@ function showPopup(e) {
   });
 }
 
-const opacity = ["interpolate", ["linear"], ["zoom"], 11, 0, 14, 0.75, 20, 0.5];
+const opacity = [
+  "interpolate",
+  ["linear"],
+  ["zoom"],
+  10.5,
+  0,
+  11,
+  0.5,
+  14,
+  0.75,
+  20,
+  0.5,
+];
 
 function displayData() {
   module.addVizLayer({
@@ -214,13 +217,11 @@ function displayData() {
       .getSource("auto-theft")
       .getClusterExpansionZoom(clusterId, (err, zoom) => {
         if (err) return;
-        module.map.once("idle", () => {
-          if (module.map.getZoom() > zoom) return;
-          module.map.easeTo({
-            center: features[0].geometry.coordinates,
-            duration: 2500,
-            zoom: zoom,
-          });
+        if (module.map.getZoom() > zoom) return;
+        module.map.easeTo({
+          center: features[0].geometry.coordinates,
+          duration: 2500,
+          zoom: zoom,
         });
       });
   });
