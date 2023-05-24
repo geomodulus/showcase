@@ -59,5 +59,186 @@
         "license_url": "https://www.ontario.ca/page/open-government-licence-ontario"
       }
     }
-  ]
+  ],
+  "teaser": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.39507456661651, 43.7102542213602]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.41154142990736, 43.7713708245431]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.1945314002376, 43.74852512039914]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.37354773383687, 43.6331568769636]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.54187685688528, 43.626147910694854]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.33732577303518, 43.67600817830644]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.43706598631694, 43.65520623727888]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.45667037859972, 43.71474437552006]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.4896287462501, 43.764554695774564]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.3543757363532, 43.802852655977574]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-79.59434863282931, 43.717199463481094]
+        }
+      }
+    ]
+  }
 }
