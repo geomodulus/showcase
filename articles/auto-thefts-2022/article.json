@@ -34,7 +34,7 @@
     {
       "id": "90ea0270-f672-11ed-b67e-0242ac120002",
       "name": "auto-thefts",
-      "url": "https://media.geomodul.us/articles/auto-thefts-2022/auto-theft-2014-2022--no-doubles.geojson",
+      "url": "https://media.geomodul.us/articles/auto-thefts-2022/auto-thefts-minimized.geojson",
       "source": {
         "title": "Auto Theft Open Data",
         "provider": "Toronto Police Service",
