@@ -87,7 +87,7 @@ function updateViz(year) {
 
 const radioYears = document.createElement("div");
 radioYears.innerHTML = `
-  <fieldset class="mb-3" id="year-selector">
+  <fieldset class="mb-3 -mt-4" id="year-selector">
     <legend class="mb-1 text-sm">Click to see auto thefts by year:</legend>
     <div class="flex justify-between">
       <div class="flex justify-center w-1/5">
@@ -119,18 +119,18 @@ function addLegend() {
 
   const content = document.createElement("div");
   content.innerHTML = `
-    <div class="space-y-1">
+    <div class="mt-3">
       
       <div class=" bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500 h-6 rounded-sm shrink-0 w-full"></div>
-      <div class="flex items-center justify-between text-sm">
+      <div class="flex items-center justify-between mt-1 text-sm">
         <span>Less</span>
         <span class="font-bold">Thefts/km<sup>2</sup></span>
         <span>More</span>
       </div>
 
-      <p class="mt-2 text-sm">Height indicates total number of thefts in that neighbourhood. Click to see more details.</p>
+      <p class="mt-3 text-sm">Height indicates total number of thefts in that neighbourhood. Click to see more details.</p>
 
-      <div class="flex justify-between">
+      <div class="flex justify-between -mt-1">
         <div class="flex items-center">
           <div class="bg-[#D32360] border-2 border-[#E5E8EB] dark:border-[#F9FAFB] h-5 mr-2 rounded-full shrink-0 w-5">
           </div>
