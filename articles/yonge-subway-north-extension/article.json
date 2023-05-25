@@ -3,6 +3,7 @@
   "display_name": "North to Richmond Hill: Breaking down the 8-km Yonge subway extension",
   "h2": "Toronto’s next big mass transit project just took a significant step forward. Here’s the latest.",
   "img_url": "https://media.geomodul.us/img/yonge-subway-train.jpg",
+  "is_live": true,
   "categories": ["Transit"],
   "authors": ["Reece Martin"],
   "camera": {
@@ -20,7 +21,7 @@
   "pub_date": "2023-05-03",
   "code_credit": "Kyle Duncan",
   "promo_start": "2023-05-03T16:57:07.398762-04:00",
-  "promo_until": "2023-11-24T13:18:37.801504-05:00",
+  "promo_until": "2023-11-24T15:09:16.740336934-05:00",
   "promo_wait": "1h0m0s",
   "promo_expires": "0001-01-01T00:00:00Z",
   "loc": {
