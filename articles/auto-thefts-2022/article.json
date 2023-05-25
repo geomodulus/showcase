@@ -20,8 +20,8 @@
   "pub_date": "2023-05-24",
   "code_credit": "Kyle Duncan",
   "promo_start": "2023-05-24T13:18:37.801504-04:00",
-  "promo_until": "2023-11-24T15:09:16.740336934-05:00",
-  "promo_wait": "5m0s",
+  "promo_until": "2023-11-25T09:58:52.734199-05:00",
+  "promo_wait": "20m0s",
   "promo_expires": "0001-01-01T00:00:00Z",
   "loc": {
     "lng": 0,
@@ -62,10 +62,12 @@
     }
   ],
   "teaser": {
-    "type": "FeatureCollection",
     "features": [
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.39507456661651, 43.7102542213602],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -75,13 +77,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.39507456661651, 43.7102542213602]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.41154142990736, 43.7713708245431],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -91,13 +93,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.41154142990736, 43.7713708245431]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.1945314002376, 43.74852512039914],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -107,13 +109,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.1945314002376, 43.74852512039914]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.37354773383687, 43.6331568769636],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -123,13 +125,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.37354773383687, 43.6331568769636]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.54187685688528, 43.626147910694854],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -139,13 +141,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.54187685688528, 43.626147910694854]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.33732577303518, 43.67600817830644],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -155,13 +157,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.33732577303518, 43.67600817830644]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.43706598631694, 43.65520623727888],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -171,13 +173,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.43706598631694, 43.65520623727888]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.45667037859972, 43.71474437552006],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -187,13 +189,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.45667037859972, 43.71474437552006]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.4896287462501, 43.764554695774564],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -203,13 +205,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.4896287462501, 43.764554695774564]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.3543757363532, 43.802852655977574],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -219,13 +221,13 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.3543757363532, 43.802852655977574]
-        }
+        "type": "Feature"
       },
       {
-        "type": "Feature",
+        "geometry": {
+          "coordinates": [-79.59434863282931, 43.717199463481094],
+          "type": "Point"
+        },
         "properties": {
           "circle-interactions-layer": {},
           "symbols-layer": {
@@ -235,11 +237,9 @@
             "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
           }
         },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [-79.59434863282931, 43.717199463481094]
-        }
+        "type": "Feature"
       }
-    ]
+    ],
+    "type": "FeatureCollection"
   }
 }
