@@ -24,10 +24,6 @@
   "promo_until": "2023-12-01T14:29:59.167697-05:00",
   "promo_wait": "1h0m0s",
   "promo_expires": "0001-01-01T00:00:00Z",
-  "loc": {
-    "lng": 0,
-    "lat": 0
-  },
   "related": [
     "d06887b4-b851-11ed-98b9-66eb68fb8db0",
     "234b8f86-cfc2-11ec-9d64-0242ac120002",
