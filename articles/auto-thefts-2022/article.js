@@ -99,7 +99,7 @@ function createLineGraph(data, id) {
     .domain([
       0,
       d3.max(dataArray, (d) =>
-        d3.max(Object.values(d).filter((val) => typeof val === "number"))
+        d3.max(Object.values(d).filter((val) => typeof val === "number")),
       ),
     ])
     .range([height, 0]);
@@ -134,7 +134,7 @@ function createLineGraph(data, id) {
         .attr("stroke", color(key))
         .attr("stroke-width", 2)
         .attr("d", (d) =>
-          line(d.map((obj) => ({ year: obj.year, value: obj[key] })))
+          line(d.map((obj) => ({ year: obj.year, value: obj[key] }))),
         );
     }
   });
@@ -258,7 +258,7 @@ function createTop10BarGraph(data, id, color, fontColor) {
 }
 
 fetch(
-  "https://media.geomodul.us/articles/auto-thefts-2022/updated-graph-data.json"
+  "https://media.geomodul.us/articles/auto-thefts-2022/updated-graph-data.json",
 )
   .then((r) => r.json())
   .then((d) => {
@@ -268,25 +268,25 @@ fetch(
       d["thefts-top-10-neighbourhoods-2022"],
       "thefts-top-10-neighbourhoods-2022",
       "#ED3242",
-      module.isDarkMode() ? "#FFF" : "#000"
+      module.isDarkMode() ? "#FFF" : "#000",
     );
     createTop10BarGraph(
       d["thefts-bottom-10-neighbourhoods-2022"],
       "thefts-bottom-10-neighbourhoods-2022",
       "#FFD515",
-      "#000"
+      "#000",
     );
     createTop10BarGraph(
       d["thefts-top-10-perSquareKm-2022"],
       "thefts-top-10-perSquareKm-2022",
       "#108DF6",
-      module.isDarkMode() ? "#FFF" : "#000"
+      module.isDarkMode() ? "#FFF" : "#000",
     );
     createTop10BarGraph(
       d["thefts-bottom-10-perSquareKm-2022"],
       "thefts-bottom-10-perSquareKm-2022",
       "#00A168",
-      module.isDarkMode() ? "#FFF" : "#000"
+      module.isDarkMode() ? "#FFF" : "#000",
     );
   })
   .catch((e) => console.error(e));

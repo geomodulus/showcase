@@ -51,7 +51,7 @@ function updateDataLabel(year) {
         "px-2",
         "py-1",
         "rounded-sm",
-        "text-base"
+        "text-base",
       );
       label.innerText = `${year} data`;
       module.ctx.fullscreenControls.useFeatureLabel(label);
@@ -208,7 +208,7 @@ function showPopup(e) {
       offset: 15,
     })
       .setLngLat(e.lngLat)
-      .setHTML(defaultHTML)
+      .setHTML(defaultHTML),
   );
   const z = module.map.getZoom();
   module.map.easeTo({

@@ -17,7 +17,7 @@ window.addEventListener(
       }
     });
   },
-  { once: true }
+  { once: true },
 );
 
 function addLayers() {

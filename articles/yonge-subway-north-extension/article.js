@@ -281,7 +281,7 @@ function addLines() {
 
 function addMainViz() {
   fetch(
-    "https://media.geomodul.us/articles/yonge-north-subway-extension/yonge-north-extension.geojson"
+    "https://media.geomodul.us/articles/yonge-north-subway-extension/yonge-north-extension.geojson",
   )
     .then((r) => r.json())
     .then((d) => {
@@ -358,7 +358,7 @@ function addGoLine() {
 }
 
 fetch(
-  "https://media.geomodul.us/articles/yonge-north-subway-extension/richmondHill.geojson"
+  "https://media.geomodul.us/articles/yonge-north-subway-extension/richmondHill.geojson",
 )
   .then((r) => r.json())
   .then((d) => {
@@ -372,7 +372,7 @@ fetch(
   .catch((e) => console.error(e));
 
 fetch(
-  "https://media.geomodul.us/articles/yonge-north-subway-extension/viva-brt-routes.geojson"
+  "https://media.geomodul.us/articles/yonge-north-subway-extension/viva-brt-routes.geojson",
 )
   .then((r) => r.json())
   .then((d) => {

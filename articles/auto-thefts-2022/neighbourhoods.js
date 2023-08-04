@@ -87,8 +87,8 @@ function showDetails(e) {
       e.features[0].properties.AREA_NAME
     } (${currentYear})</h3>
     <p>Thefts/km<sup>2</sup>: <span class=${colour}>${e.features[0].properties[
-    `perKm2-${currentYear}`
-  ].toFixed(4)}</span></p>
+      `perKm2-${currentYear}`
+    ].toFixed(4)}</span></p>
     <p>Total Thefts: ${e.features[0].properties[`${currentYear}`]}</p>
   `;
 
@@ -108,7 +108,7 @@ function showDetails(e) {
       offset: 30,
     })
       .setLngLat(center.geometry.coordinates)
-      .setHTML(defaultHTML)
+      .setHTML(defaultHTML),
   );
   module.map.fitBounds(bbox, {
     bearing: module.map.getBearing(),
@@ -213,13 +213,13 @@ function addNeighbourhoods() {
       if (hoveredStateId !== null) {
         module.map.setFeatureState(
           { source: "neighbourhoods", id: hoveredStateId },
-          { hover: false }
+          { hover: false },
         );
       }
       hoveredStateId = e.features[0].id;
       module.map.setFeatureState(
         { source: "neighbourhoods", id: hoveredStateId },
-        { hover: true }
+        { hover: true },
       );
     }
   });
@@ -227,7 +227,7 @@ function addNeighbourhoods() {
     if (hoveredStateId !== null) {
       module.map.setFeatureState(
         { source: "neighbourhoods", id: hoveredStateId },
-        { hover: false }
+        { hover: false },
       );
     }
     hoveredStateId = null;

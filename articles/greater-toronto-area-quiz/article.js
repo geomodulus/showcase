@@ -100,7 +100,7 @@ quiz.init = () => {
       quiz.start();
       quiz.startButton.innerText = "Submit";
     },
-    { once: true }
+    { once: true },
   );
   // remove timeouts on article close
   window.addEventListener(
@@ -112,7 +112,7 @@ quiz.init = () => {
         }
       }
     },
-    { once: true }
+    { once: true },
   );
 };
 
@@ -213,7 +213,7 @@ quiz.correctGuess = (answer) => {
   // add to total correct on screen & adjust var visual
   quiz.totalCorrect.textContent = quiz.correctAnswers.length;
   quiz.scoreBar.style.width = `${Math.round(
-    (quiz.correctAnswers.length / quiz.masterTotals.answers) * 100
+    (quiz.correctAnswers.length / quiz.masterTotals.answers) * 100,
   )}%`;
   quiz.checkBarZindex();
   quiz.revealAnswer(answer);
@@ -394,7 +394,7 @@ quiz.highScore = () => {
 quiz.showRemaining = () => {
   quiz.siienComment.innerText = "Here's what you missed...";
   const remaining = quiz.answerList.filter(
-    (municipality) => !quiz.correctAnswers.includes(municipality)
+    (municipality) => !quiz.correctAnswers.includes(municipality),
   );
   quiz.timeouts = {};
   remaining.forEach((municipality, index) => {
@@ -491,7 +491,7 @@ quiz.reset = () => {
       quiz.start();
       quiz.startButton.innerText = "Submit";
     },
-    { once: true }
+    { once: true },
   );
   quiz.endButton.removeEventListener("click", quiz.reset);
   quiz.endButton.addEventListener("click", quiz.giveUp);

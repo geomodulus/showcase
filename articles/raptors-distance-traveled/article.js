@@ -28,7 +28,7 @@ window.addEventListener(
       }
     }
   },
-  { once: true }
+  { once: true },
 );
 
 function animateRoute(id) {
@@ -56,7 +56,7 @@ function showPopup(e) {
       offset: 10,
     })
       .setLngLat(e.lngLat)
-      .setHTML(module.defaultPopupHTML(content.innerHTML))
+      .setHTML(module.defaultPopupHTML(content.innerHTML)),
   );
   if (window.innerWidth < 1024) {
     module.map.easeTo({
@@ -152,7 +152,7 @@ function zoomToBbox() {
       duration: 2000,
       linear: true,
       padding: padding,
-    }
+    },
   );
   module.map.once("idle", mapRoutes);
 }
@@ -169,7 +169,7 @@ function findMatches(distances) {
     if (player.distance > 0) {
       const meters = player.distance * 1609.344;
       const destIndex = destinations.findIndex(
-        (poi) => poi.route.routes[0].distance > meters
+        (poi) => poi.route.routes[0].distance > meters,
       );
       const destination = destIndex
         ? { ...destinations[destIndex] }
@@ -205,7 +205,7 @@ function addImages(data) {
         (error, image) => {
           if (error) console.log("Error loading image", error);
           module.map.addImage(player.image, image);
-        }
+        },
       );
     }
   });
@@ -213,7 +213,7 @@ function addImages(data) {
 
 function getDistances() {
   fetch(
-    "https://media.geomodul.us/articles/raptors-distance-travelled/distances.json"
+    "https://media.geomodul.us/articles/raptors-distance-travelled/distances.json",
   )
     .then((r) => r.json())
     .then((d) => {
@@ -286,7 +286,7 @@ if (!module.map.hasImage("scotiabank-arena")) {
       if (error) console.log("Error loading image", error);
       module.map.addImage("scotiabank-arena", image);
       addArena();
-    }
+    },
   );
 } else addArena();
 
@@ -296,12 +296,12 @@ if (!module.map.hasImage("orange-bball")) {
     (error, image) => {
       if (error) console.log("Error loading image", error);
       module.map.addImage("orange-bball", image);
-    }
+    },
   );
 }
 
 fetch(
-  "https://media.geomodul.us/articles/raptors-distance-travelled/poi-routes.json"
+  "https://media.geomodul.us/articles/raptors-distance-travelled/poi-routes.json",
 )
   .then((r) => r.json())
   .then((d) => {
