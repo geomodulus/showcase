@@ -53,5 +53,11 @@ fetch(url)
       data: data,
     });
     addLayers();
+    module.map.once("idle", () => {
+      module.map.fitBounds(turf.bbox(data), {
+        bearing: module.map.getBearing(),
+        padding: 0,
+      });
+    });
   })
   .catch((e) => console.error(e));

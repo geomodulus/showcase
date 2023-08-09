@@ -1,21 +1,25 @@
-function isMobile() {
-  if (window.innerWidth < 1024) return true;
-  else if (window.innerWidth >= 1024) return false;
-  else return `Width not determined: ${window.innerWidth}`;
+function goFullScreen() {
+  const fullscreen = document.querySelector(".mapctrl-fullscreen");
+  if (fullscreen) fullscreen.click();
+  else setTimeout(goFullScreen, 0);
 }
+goFullScreen();
+// if (["", "sm", "md"].includes(module.currentBreakpoint())) goFullScreen();
 
-if (isMobile()) module.map.setMinZoom(7.5);
-else module.map.setMinZoom(9);
-
-setTimeout(() => {
-  if (isMobile()) {
-    module.map.easeTo({
-      center: [-79.482, 43.788],
-      duration: 1500,
-      zoom: 8,
-    });
-  }
-}, 0);
+function showPopup(content) {
+  // const defaultHTML = module.defaultPopupHTML(content.innerHTML);
+  module.clearPopups();
+  module.showPopup(
+    new mapboxgl.Popup({
+      anchor: "center",
+      closeButton: false,
+      closeOnClick: false,
+      maxWidth: window.innerWidth < 1024 ? "325px" : "425px",
+    })
+      .setLngLat(module.map.getCenter())
+      .setHTML(module.defaultPopupHTML(content.innerHTML)),
+  );
+}
 
 const quiz = {
   // establish objects for data
@@ -23,6 +27,7 @@ const quiz = {
   borderBox: {},
   coordinates: {},
   correctAnswers: [],
+  currentPrompt: "",
   giveUp: () => quiz.end("giveUp"),
   missedAnswers: [],
   time: {
@@ -30,7 +35,8 @@ const quiz = {
     seconds: 0,
   },
   timer: null, // stores interval timer later
-  totalAnswers: 0,
+  // totalAnswers: 0,
+  totalCount: 0,
   result: {
     score: 0,
     time: {},
@@ -54,66 +60,18 @@ quiz.comments = {
   ],
   incorrect: [
     "Nope, that ain't right.",
-    "Never heard of it.",
+    "Got your glasses on?", // "Never heard of it.",
     "Sorry, try again.",
     "Afraid not.",
-    "It sounded right, but no.",
+    "You're in the right province.", // "It sounded right, but no.",
   ],
   repeated: [
     "Already got that one!",
     "No points for doubles.",
     "You're repeating yourself.",
-    "It's nice, but you named it twice.",
+    "It's nice, but you clicked it twice.",
     "Maybe try something different.",
   ],
-};
-
-/* INITIALIZE QUIZ */
-
-quiz.init = () => {
-  // grab visual elements
-  quiz.form = document.querySelector("form.quiz");
-  quiz.endButton = document.getElementById("giveUp");
-  quiz.siienComment = document.getElementById("commentText");
-  quiz.minutes = document.getElementById("minutes");
-  quiz.scoreBar = document.getElementById("scoreBar");
-  quiz.seconds = document.getElementById("seconds");
-  quiz.siien = document.getElementById("siien");
-  quiz.startButton = document.getElementById("startQuiz");
-  quiz.introSection = document.getElementById("introduction");
-  quiz.timeBar = document.getElementById("timeBar");
-  quiz.totalAnswers = document.getElementById("totalAnswers");
-  quiz.totalCorrect = document.getElementById("correct");
-  quiz.userInput = document.getElementById("guesses");
-
-  // handle submit in form element
-  quiz.form.addEventListener("submit", quiz.handleSubmit);
-  // listen for user gueses
-  quiz.userInput.addEventListener("input", quiz.checkGuess);
-  // listen for the user giving up
-  quiz.endButton.addEventListener("click", quiz.giveUp);
-  // allow the user to start the quiz
-  quiz.startButton.addEventListener(
-    "click",
-    (e) => {
-      e.preventDefault();
-      quiz.start();
-      quiz.startButton.innerText = "Submit";
-    },
-    { once: true },
-  );
-  // remove timeouts on article close
-  window.addEventListener(
-    "flexWindowReset",
-    () => {
-      if (quiz.timeouts) {
-        for (const municipality in quiz.timeouts) {
-          clearTimeout(quiz.timeouts[municipality]);
-        }
-      }
-    },
-    { once: true },
-  );
 };
 
 quiz.getRandom = (array) => {
@@ -121,28 +79,139 @@ quiz.getRandom = (array) => {
   return array[randomIndex];
 };
 
-// handles the user clicking the button during the quiz
-quiz.handleSubmit = (e) => {
-  e.preventDefault();
-  quiz.animateSiien("turn");
-  quiz.siienComment.innerText = quiz.getRandom(quiz.comments.incorrect);
-  quiz.userInput.value = "";
+// show an intro popup
+quiz.showIntro = () => {
+  const container = document.createElement("div");
+  const content = document.createElement("div");
+  content.className =
+    "max-h-[400px] pb-2 pr-1 lg:pr-2 overflow-y-scroll space-y-2";
+
+  content.innerHTML = `
+    <h2 class="text-base lg:text-lg">The great Greater Toronto and Hamilton Area municipality quiz</h2>
+    <h3 class="text-sm lg:text-base">How many GTHA municipalities can you name in three minutes?</h3>
+
+    <div class="byline text-xs space-y-2">
+      <div>
+        <div class="inline-block text-map-800 dark:text-gray-100 uppercase author bg-gray-300 dark:bg-gray-700 px-1.5 py-1 shadow-emboss">
+        Torontoverse Staff</div>
+        <div class="inline-block uppercase author text-gray-900 font-semibold bg-purple-100 px-1.5 py-1 shadow-emboss">
+        Fun</div>
+      </div>
+      <div class="pubdate text-xxs"><span class="text-gray-600 dark:text-gray-400 font-bold">Published</span> 2022-06-07</div>
+    </div>
+    
+    <figure>
+      <img src="https://media.geomodul.us/img/GTA-highway.jpg" alt="A view of highway signs in the Greater Toronto Area" style="width: 100%" />
+      <figcaption class="pl-5 -indent-[14px] pr-2 py-1 text-gray-900 dark:text-gray-400 bg-map-200 dark:bg-gray-800 before:content-chevron text-xs">
+      No hints. (Photo illustration by Torontoverse Staff;
+      <a href="https://commons.wikimedia.org/wiki/File:Ontario_Highway_401_(27023911124).jpg" target="_blank">Wikimedia Commons</a>)
+      </figcaption>
+    </figure>
+    
+    <p>You’ve come to a site called Torontoverse, so you must have at least <i>some</i> knowledge of the place. Or you came by mistake. Whatever.</p>
+    <p> The point is: The Greater Toronto and Hamilton Area is made up of 26 distinct places — a mix of urban, suburban, and rural municipalities. How many of them can you name? </p>
+    <button class="bg-gray-300 dark:bg-gray-700 py-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Take the Torontoverse quiz to find out!</button>
+    
+    <div class="embed text-sm py-4 space-x-2">
+    <a class="bg-[#4267B2] p-1 hover:bg-blue-700 shadow-emboss no-underline text-white white-link visited:text-white" href="https://www.facebook.com/dialog/share?app_id=3608853232681502&amp;display=page&amp;href=http%3A%2F%2Flocalhost%3A8100%2Farticles%2FmhGVGtCQEeydZAJCrBIAAg%2Fthe-great-greater-toronto-and" target="_blank">
+    <img src="/img/icons/brand/fb-dark.svg" class="inline h-4 mx-0.5" alt="facebook logo">Share</a>
+    <a class="bg-[#1DA1F2] p-1 hover:bg-blue-300 shadow-emboss no-underline text-white white-link align-baseline visited:text-white" href="https://twitter.com/intent/tweet?text=%22The%20great%20Greater%20Toronto%20and%20Hamilton%20Area%20municipality%20quiz%22%20from%20%40torontoverse%0A%0A&amp;url=http%3A%2F%2Flocalhost%3A8100%2Farticles%2FmhGVGtCQEeydZAJCrBIAAg%2Fthe-great-greater-toronto-and" target="_blank"><img src="/img/icons/brand/twitter-dark.svg" class="inline h-4 mx-0.5" alt="twitter logo">Share</a>
+    </div>
+
+    <p class="text-xxs text-gray-700 dark:text-gray-400">Code and markup by Kyle Duncan. ©Torontoverse, 2023</p>
+  `;
+
+  container.appendChild(content);
+
+  showPopup(container);
+  document
+    .getElementById("start-quiz")
+    .addEventListener("click", quiz.showInstructions);
 };
 
-// starts the quiz
+// show in instruction popup
+quiz.showInstructions = () => {
+  const container = document.createElement("div");
+  container.innerHTML = `
+    <div class="space-y-2">
+      <h2 class="text-base lg:text-lg">Instructions</h2>
+      <p class="text-sm lg:text-base">We'll give you the names of the muncipalities, just click or tap on the map where you think they can be found. You've got 3 minutes, and can skip one if you get stuck. Click “Start Quiz" to begin. Good luck!</p>
+      <button class="bg-gray-300 dark:bg-gray-700 mt-2 p-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Start Quiz</button>
+    </div>
+  `;
+  showPopup(container);
+  document
+    .getElementById("start-quiz")
+    .addEventListener("click", quiz.showPrompt);
+};
+
+quiz.showPrompt = () => {
+  module.clearPopups();
+  // create a persistent element at the bottom center of the map that shows:
+  // the next municipality to guess
+  // the time remaining
+  // the number of correct answers
+  // a button to skip to the next municipality
+  // a button to end the quiz
+  const prompt = document.createElement("div");
+  prompt.className =
+    "absolute bottom-10 cursor-default flex flex-col items-center justify-center text-map-800 dark:text-gray-100 w-full";
+  prompt.id = "promptPopup";
+  prompt.innerHTML = `
+    <div class="bg-gray-300 dark:bg-gray-700 flex items-center justify-center min-h-[56px] my-2 py-2 w-full lg:w-1/2" id="commentContainer">
+      <p class="px-3 text-center text-sm" id="commentText">You're up!</p>
+    </div>
+
+    <div class="bg-gray-300 dark:bg-gray-700 text-center py-2 w-full lg:w-1/2">
+      <p>Where is <span class="font-bold" id="prompt">${quiz.currentPrompt}</span>?</p>
+    </div>
+
+    <div class="bg-gray-300 dark:bg-gray-700 flex flex-row items-center h-6 justify-evenly my-2 relative text-sm w-full lg:w-1/2">
+      <div class="absolute bg-green-400 dark:bg-green-600 duration-500 ease-linear h-6 left-0 top-0 transition-[width] w-full" id="timeBar"></div>
+      <div class="absolute bg-purple-800 dark:bg-purple-200 duration-500 ease-linear h-6 left-0 top-0 transition-[width] w-0" id="scoreBar"></div>
+      <p class="mb-0 text-sm z-20">Time Left: <span id="minutes">3</span>:<span id="seconds">00</span></p>
+      <p class="mb-0 text-sm z-10"><span id="correct">0</span> / <span id="totalAnswers">26</span></p>
+    </div>
+
+    <div class="flex justify-between my-1 w-full lg:w-1/2">
+      <button class="bg-gray-300 dark:bg-gray-700 shadow-emboss py-2 w-1/2" id="skipPrompt" type="button">Skip</button>
+      <button class="bg-gray-300 dark:bg-gray-700 shadow-emboss py-2 w-1/2" id="giveUp" type="button">Give Up</button>
+    </div>
+  `;
+  // add hover states to buttons
+  module.map.getContainer().appendChild(prompt);
+  quiz.start();
+};
+
+quiz.newPrompt = () => {
+  quiz.currentPrompt = quiz.getRandom(quiz.answerList);
+  quiz.prompt.innerText = quiz.currentPrompt;
+};
+
 quiz.start = () => {
-  if (isMobile()) quiz.introSection.classList.add("hidden");
-  // build quiz data
-  quiz.buildData();
-  // start timer
-  quiz.startTimer();
-  // enable input and give focus
-  quiz.siienComment.innerText = "Go!";
-  quiz.userInput.disabled = false;
-  quiz.userInput.focus();
-};
+  /* INITIALIZE QUIZ */
+  // grab visual elements
+  //text
+  quiz.siienComment = document.getElementById("commentText");
+  quiz.prompt = document.getElementById("prompt");
+  quiz.minutes = document.getElementById("minutes");
+  quiz.seconds = document.getElementById("seconds");
+  quiz.totalCorrect = document.getElementById("correct");
+  quiz.totalAnswers = document.getElementById("totalAnswers");
+  // elements
+  quiz.scoreBar = document.getElementById("scoreBar");
+  quiz.timeBar = document.getElementById("timeBar");
+  //buttons
+  quiz.endButton = document.getElementById("giveUp");
+  quiz.skipButton = document.getElementById("skipPrompt");
 
-/* START OF QUIZ */
+  module.handleCursor("boundary-fills", quiz.checkAnswer);
+  quiz.skipButton.addEventListener("click", quiz.newPrompt);
+  quiz.endButton.addEventListener("click", quiz.giveUp);
+  quiz.buildData();
+  quiz.newPrompt();
+  quiz.startTimer();
+};
 
 // add each location in the geojson source to the answer list
 // and to the list of coordinates for flyTo on correct guess
@@ -151,11 +220,11 @@ quiz.buildData = () => {
     const sourceData = module.map.getSource("municipal-centres");
     sourceData._data.features.forEach((centre) => {
       quiz.answerList.push(centre.properties.MUNICIPAL_NAME_SHORTFORM);
-
       quiz.coordinates[centre.properties.MUNICIPAL_NAME_SHORTFORM] =
         centre.geometry.coordinates;
       quiz.borderBox[centre.properties.MUNICIPAL_NAME_SHORTFORM] =
         centre.properties._bbox;
+      quiz.totalCount++;
     });
     quiz.answerList.sort();
   }
@@ -163,7 +232,7 @@ quiz.buildData = () => {
     answers: quiz.answerList.length,
     time: quiz.time.minutes * 60 + quiz.time.seconds,
   };
-  quiz.totalAnswers.innerText = quiz.masterTotals.answers;
+  quiz.totalAnswers.innerText = quiz.totalCount;
 };
 
 // run a timer and display on screen
@@ -192,20 +261,21 @@ quiz.startTimer = () => {
   window.addEventListener("flexWindowReset", () => clearInterval(quiz.timer));
 };
 
-// checks the guess against available answers
-quiz.checkGuess = () => {
-  const guess = quiz.userInput.value.trim().toUpperCase();
-  if (quiz.answerList.includes(guess)) {
+quiz.checkAnswer = (e) => {
+  const guess = e.features[0].properties.MUNICIPAL_NAME_SHORTFORM;
+  if (quiz.currentPrompt == guess) {
     if (quiz.correctAnswers.includes(guess)) {
       quiz.siienComment.innerText = quiz.getRandom(quiz.comments.repeated);
-    } else quiz.correctGuess(guess);
-    // reset user input
-    quiz.userInput.value = "";
-  }
+    } else {
+      quiz.correctGuess(guess);
+    }
+  } else quiz.siienComment.innerText = quiz.getRandom(quiz.comments.incorrect);
 };
 
 // remove fill and flyTo region on successful guess
 quiz.correctGuess = (answer) => {
+  // remove current prompt from answers list
+  quiz.answerList.splice(quiz.answerList.indexOf(quiz.currentPrompt), 1);
   // add to array of correct answers
   quiz.correctAnswers.push(answer);
   // random list of encouragment? dependent on progress?
@@ -219,44 +289,20 @@ quiz.correctGuess = (answer) => {
   quiz.revealAnswer(answer);
   if (quiz.correctAnswers.length === quiz.masterTotals.answers) {
     setTimeout(() => quiz.end("win"), 1000);
-  } else quiz.animateSiien("bounce");
-};
-
-quiz.animateSiien = (animation) => {
-  if (animation === "bounce") {
-    quiz.siien.classList.add("-translate-y-1/4");
-    setTimeout(() => {
-      quiz.siien.classList.add("animate-bounce");
-    }, 700);
-    setTimeout(() => {
-      quiz.siien.classList.remove("animate-bounce");
-      quiz.siien.classList.remove("-translate-y-1/4");
-    }, 3200);
-  }
-  if (animation === "turn") {
-    quiz.siien.classList.add("scale-x-[-1]");
-    setTimeout(() => {
-      quiz.siien.classList.remove("scale-x-[-1]");
-    }, 1000);
-  }
+  } else quiz.newPrompt();
+  //  else quiz.animateSiien("bounce");
 };
 
 quiz.revealAnswer = (answer) => {
   // fly to region, reveal
-  if (isMobile()) {
-    const bearing = module.map.getBearing();
-    module.map.fitBounds(quiz.borderBox[answer], {
-      bearing: bearing,
-      duration: 1500,
-      linear: true,
-    });
-  } else {
-    module.map.easeTo({
-      center: quiz.coordinates[answer],
-      duration: 1500,
-      zoom: 10,
-    });
-  }
+  const bearing = module.map.getBearing();
+  module.map.fitBounds(quiz.borderBox[answer], {
+    bearing: bearing,
+    duration: 1500,
+    linear: true,
+    maxZoom: 9,
+    // offset for prompt window on mobile
+  });
   module.map
     .setFilter("boundary-fills", quiz.getFilter("fill"))
     // add label with region name
@@ -301,13 +347,12 @@ quiz.end = (outcome) => {
     time: { ...quiz.time },
   };
 
-  quiz.form.removeEventListener("submit", quiz.handleSubmit);
-  quiz.form.addEventListener("submit", (e) => e.preventDefault());
   quiz.endButton.removeEventListener("click", quiz.giveUp);
   quiz.endButton.innerText = "Reset Quiz";
   quiz.endButton.addEventListener("click", quiz.reset);
 
   if (outcome === "win") {
+    quiz.prompt;
     // stop the timer
     clearInterval(quiz.timer);
     quiz.siienComment.innerText = "Well done, you got them all!";
@@ -325,11 +370,10 @@ quiz.end = (outcome) => {
     quiz.siienComment.innerText = "Time's up! Keep guessing if you like.";
 
   if (outcome === "lose" || outcome === "giveUp") {
-    quiz.startButton.focus();
-    quiz.userInput.value = "";
+    quiz.skipButton.focus();
     // offer to reveal rest of answers
-    quiz.startButton.innerText = "Show Remaining";
-    quiz.startButton.addEventListener("click", quiz.showRemaining, {
+    quiz.skipButton.innerText = "Show Remaining";
+    quiz.skipButton.addEventListener("click", quiz.showRemaining, {
       once: true,
     });
   }
@@ -354,13 +398,12 @@ quiz.showResult = () => {
   if (score > 10) comment = quiz.comments.result.better;
   if (score > 20) {
     comment = quiz.comments.result.best;
-    quiz.highScore();
+    // quiz.highScore();
   }
-
   // replace with score and comment
   const results = [
     // "Game Over!",
-    `You got ${score} out of ${quiz.answerList.length} municipalities with ${timeLeft}.`,
+    `You got ${score} out of ${quiz.totalCount} municipalities with ${timeLeft}.`,
     comment,
     "Thanks for playing!",
   ];
@@ -399,6 +442,7 @@ quiz.showRemaining = () => {
   quiz.timeouts = {};
   remaining.forEach((municipality, index) => {
     const timeoutInfo = setTimeout(() => {
+      quiz.prompt.innerText = municipality;
       quiz.missedAnswers.push(municipality);
       quiz.revealMissed(municipality);
     }, index * 2500);
@@ -408,20 +452,13 @@ quiz.showRemaining = () => {
 
 quiz.revealMissed = (answer) => {
   // fly to region, reveal
-  if (isMobile()) {
-    const bearing = module.map.getBearing();
-    module.map.fitBounds(quiz.borderBox[answer], {
-      bearing: bearing,
-      duration: 1500,
-      linear: true,
-    });
-  } else {
-    module.map.easeTo({
-      center: quiz.coordinates[answer],
-      duration: 1500,
-      zoom: 10,
-    });
-  }
+  const bearing = module.map.getBearing();
+  module.map.fitBounds(quiz.borderBox[answer], {
+    bearing: bearing,
+    duration: 1500,
+    linear: true,
+    maxZoom: 9,
+  });
   module.map
     .setFilter("boundary-fills", quiz.getMissedFilter("fill"))
     // add label with region name
@@ -448,20 +485,22 @@ quiz.getMissedFilter = (type) => {
 
 /* RESET QUIZ */
 quiz.reset = () => {
-  quiz.userInput.disabled = true;
-
   if (quiz.timeouts) {
     for (const municipality in quiz.timeouts) {
       clearTimeout(quiz.timeouts[municipality]);
     }
   }
 
-  if (quiz.rainbow) {
-    clearInterval(quiz.rainbow);
-    quiz.siien.classList.remove("animate-bounce");
-  }
+  // if (quiz.rainbow) {
+  //   clearInterval(quiz.rainbow);
+  //   quiz.siien.classList.remove("animate-bounce");
+  // }
 
   clearInterval(quiz.timer);
+  clearInterval(quiz.resultScroll);
+
+  document.getElementById("promptPopup").remove();
+
   quiz.correctAnswers = [];
   quiz.missedAnswers = [];
   quiz.time = {
@@ -476,37 +515,12 @@ quiz.reset = () => {
     .setFilter("labels", quiz.getFilter("label"))
     .setFilter("missedLabels", quiz.getFilter("label"));
 
-  // reset buttons elements (innerText)
-  clearInterval(quiz.resultScroll);
-  quiz.siienComment.innerText = "Click 'Start Quiz' to begin. Good luck!";
-  quiz.startButton.innerText = "Start Quiz";
-  quiz.endButton.innerText = "Give Up";
-
-  // reset button triggers
-  quiz.startButton.removeEventListener("click", quiz.showRemaining);
-  quiz.startButton.addEventListener(
-    "click",
-    (e) => {
-      e.preventDefault();
-      quiz.start();
-      quiz.startButton.innerText = "Submit";
-    },
-    { once: true },
-  );
-  quiz.endButton.removeEventListener("click", quiz.reset);
-  quiz.endButton.addEventListener("click", quiz.giveUp);
-  quiz.form.removeEventListener("submit", (e) => e.preventDefault());
-  quiz.form.addEventListener("submit", quiz.handleSubmit);
-
-  // reset time/score elements
-  quiz.minutes.innerText = quiz.time.minutes;
-  if (quiz.time.seconds < 10) quiz.seconds.innerText = `0${quiz.time.seconds}`;
-  else quiz.seconds.innerText = quiz.time.seconds;
-  quiz.timeBar.style.width = "100%";
-  quiz.totalCorrect.textContent = quiz.correctAnswers.length;
-  quiz.scoreBar.style.width = "0%";
-  quiz.checkBarZindex();
+  module.map.once("idle", quiz.showInstructions);
 };
 
-/* EXECUTE QUIZ */
-quiz.init();
+// add intro content to legend
+
+// add a listener to the map that shows the intro popup when the map is idle
+module.map.once("idle", () => {
+  setTimeout(quiz.showIntro, 500);
+});
