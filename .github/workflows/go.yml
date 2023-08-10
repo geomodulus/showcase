@@ -1,0 +1,45 @@
+name: Build showcase
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure git for private modules
+      env:
+        TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      run: git config --global url."https://chrisdinn:${TOKEN}@github.com".insteadOf "https://github.com"
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: "1.20"
+
+    - name: Format
+      run: if [ "$(go fmt ./... | wc -l)" -gt 0 ]; then exit 1; fi
+
+    - name: Test
+      run: go test -v ./...
+
+    - name: Lint
+      run: go run . lint
+    
+    - name: Check prettier
+      run: npm run format
+      
+    - name: Report Status to Slack
+      if: always()
+      uses: ravsamhq/notify-slack-action@master
+      with:
+        status: ${{ job.status }}
+        notify_when: 'failure'
+      env:
+        SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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

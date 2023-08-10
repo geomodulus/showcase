@@ -1,0 +1,40 @@
+{
+  "id": "56d77b36-0873-4437-9dc4-50c38568f522",
+  "display_name": "A transit proposal for Toronto: CityPlace station",
+  "past_names": null,
+  "headline_html": "\u003ch1\u003eA transit proposal for Toronto: CityPlace station\u003c/h1\u003e",
+  "h2": "A newly imagined station at Front and Spadina could alleviate pressure on Union, and service a growing, transit-starved area.",
+  "img_url": "https://media.geomodul.us/articles/cityplace-station/cityplace-station-rendering-4.jpg",
+  "is_live": false,
+  "categories": ["Transit", "City Living"],
+  "authors": ["Reece Martin"],
+  "camera": {
+    "": {
+      "bearing": -45,
+      "center": [-79.3944, 43.6454],
+      "zoom": 13.0008,
+      "pitch": 45
+    },
+    "lg": {
+      "center": [-79.391, 43.6467],
+      "zoom": 14.6096
+    }
+  },
+  "pub_date": "2023-07-17",
+  "code_credit": "Chris Dinn",
+  "promo_start": "0001-01-01T00:00:00Z",
+  "promo_until": "0001-01-01T00:00:00Z",
+  "promo_wait": "0s",
+  "promo_expires": "2023-06-22T11:46:58.178871-04:00",
+  "geojson_datasets": [
+    {
+      "id": "0f4bbb2e-19d8-11ee-a9c8-244bfe5bf61a",
+      "name": "geographic"
+    }
+  ],
+  "related": [
+    "4f6683a7-45b4-4234-bb41-ddf4a0e8c232",
+    "498e8b7a-f335-11ed-815e-66eb68fb8db1",
+    "49eee3ea-7c06-11ed-a1eb-0242ac120002"
+  ]
+}
