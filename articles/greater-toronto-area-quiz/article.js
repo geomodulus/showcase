@@ -4,7 +4,6 @@ function goFullScreen() {
   else setTimeout(goFullScreen, 0);
 }
 goFullScreen();
-// if (["", "sm", "md"].includes(module.currentBreakpoint())) goFullScreen();
 
 function showPopup(content) {
   // const defaultHTML = module.defaultPopupHTML(content.innerHTML);
@@ -84,7 +83,7 @@ quiz.showIntro = () => {
   const container = document.createElement("div");
   const content = document.createElement("div");
   content.className =
-    "max-h-[400px] pb-2 pr-1 lg:pr-2 overflow-y-scroll space-y-2";
+    "max-h-[400px] md:max-h-[500px] pb-2 pr-1 lg:pr-2 overflow-y-scroll space-y-2";
 
   content.innerHTML = `
     <h2 class="text-base lg:text-lg">The great Greater Toronto and Hamilton Area municipality quiz</h2>
@@ -110,12 +109,13 @@ quiz.showIntro = () => {
     
     <p>You’ve come to a site called Torontoverse, so you must have at least <i>some</i> knowledge of the place. Or you came by mistake. Whatever.</p>
     <p> The point is: The Greater Toronto and Hamilton Area is made up of 26 distinct places — a mix of urban, suburban, and rural municipalities. How many of them can you name? </p>
-    <button class="bg-gray-300 dark:bg-gray-700 py-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Take the Torontoverse quiz to find out!</button>
+    <div>
+      <button class="bg-gray-300 dark:bg-gray-700 mt-2 py-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Take the Torontoverse quiz to find out!</button>
+    </div>
     
-    <div class="embed text-sm py-4 space-x-2">
-    <a class="bg-[#4267B2] p-1 hover:bg-blue-700 shadow-emboss no-underline text-white white-link visited:text-white" href="https://www.facebook.com/dialog/share?app_id=3608853232681502&amp;display=page&amp;href=http%3A%2F%2Flocalhost%3A8100%2Farticles%2FmhGVGtCQEeydZAJCrBIAAg%2Fthe-great-greater-toronto-and" target="_blank">
-    <img src="/img/icons/brand/fb-dark.svg" class="inline h-4 mx-0.5" alt="facebook logo">Share</a>
-    <a class="bg-[#1DA1F2] p-1 hover:bg-blue-300 shadow-emboss no-underline text-white white-link align-baseline visited:text-white" href="https://twitter.com/intent/tweet?text=%22The%20great%20Greater%20Toronto%20and%20Hamilton%20Area%20municipality%20quiz%22%20from%20%40torontoverse%0A%0A&amp;url=http%3A%2F%2Flocalhost%3A8100%2Farticles%2FmhGVGtCQEeydZAJCrBIAAg%2Fthe-great-greater-toronto-and" target="_blank"><img src="/img/icons/brand/twitter-dark.svg" class="inline h-4 mx-0.5" alt="twitter logo">Share</a>
+    <div class="embed text-sm py-4 space-x-1">
+      <a class="bg-[#4267B2] p-1 hover:bg-blue-700 shadow-emboss no-underline text-white white-link visited:text-white" href="https://www.facebook.com/dialog/share?app_id=3608853232681502&amp;display=page&amp;href=http%3A%2F%2Flocalhost%3A8100%2Farticles%2FmhGVGtCQEeydZAJCrBIAAg%2Fthe-great-greater-toronto-and" target="_blank"><img src="/img/icons/brand/fb-dark.svg" class="inline h-4 mx-0.5" alt="facebook logo">Share</a>
+      <a class="bg-[#1DA1F2] p-1 hover:bg-blue-300 shadow-emboss no-underline text-white white-link align-baseline visited:text-white" href="https://twitter.com/intent/tweet?text=%22The%20great%20Greater%20Toronto%20and%20Hamilton%20Area%20municipality%20quiz%22%20from%20%40torontoverse%0A%0A&amp;url=http%3A%2F%2Flocalhost%3A8100%2Farticles%2FmhGVGtCQEeydZAJCrBIAAg%2Fthe-great-greater-toronto-and" target="_blank"><img src="/img/icons/brand/twitter-dark.svg" class="inline h-4 mx-0.5" alt="twitter logo">Share</a>
     </div>
 
     <p class="text-xxs text-gray-700 dark:text-gray-400">Code and markup by Kyle Duncan. ©Torontoverse, 2023</p>
@@ -135,7 +135,8 @@ quiz.showInstructions = () => {
   container.innerHTML = `
     <div class="space-y-2">
       <h2 class="text-base lg:text-lg">Instructions</h2>
-      <p class="text-sm lg:text-base">We'll give you the names of the muncipalities, just click or tap on the map where you think they can be found. You've got 3 minutes, and can skip one if you get stuck. Click “Start Quiz" to begin. Good luck!</p>
+      <p class="text-sm lg:text-base">We’ll give you the names of the <span class="font-bold">municipalities</span> — just click or tap on the map where you think they can be found.</p>
+      <p class="text-sm lg:text-base">You've got 3 minutes, and can skip one if you get stuck. Click “Start Quiz" to begin. Good luck!</p>
       <button class="bg-gray-300 dark:bg-gray-700 mt-2 p-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Start Quiz</button>
     </div>
   `;
@@ -155,29 +156,33 @@ quiz.showPrompt = () => {
   // a button to end the quiz
   const prompt = document.createElement("div");
   prompt.className =
-    "absolute bottom-10 cursor-default flex flex-col items-center justify-center text-map-800 dark:text-gray-100 w-full";
+    "absolute bg-map-100 dark:bg-map-800 bottom-14 lg:bottom-10 cursor-default default-popoup flex flex-col inset-x-2.5 md:inset-x-1/4 lg:inset-x-1/3 items-center justify-center";
   prompt.id = "promptPopup";
-  prompt.innerHTML = `
-    <div class="bg-gray-300 dark:bg-gray-700 flex items-center justify-center min-h-[56px] my-2 py-2 w-full lg:w-1/2" id="commentContainer">
+  const content = document.createElement("div");
+  content.className =
+    "bg-map-50 dark:bg-map-900 border-2 lg:border-4 border-map-100 dark:border-map-800 p-1 space-y-1 window-content";
+  content.innerHTML = `
+    <div class="flex items-center justify-center min-h-[56px] w-full" id="commentContainer">
       <p class="px-3 text-center text-sm" id="commentText">You're up!</p>
     </div>
 
-    <div class="bg-gray-300 dark:bg-gray-700 text-center py-2 w-full lg:w-1/2">
+    <div class="text-center w-full">
       <p>Where is <span class="font-bold" id="prompt">${quiz.currentPrompt}</span>?</p>
     </div>
 
-    <div class="bg-gray-300 dark:bg-gray-700 flex flex-row items-center h-6 justify-evenly my-2 relative text-sm w-full lg:w-1/2">
+    <div class="bg-map-200 dark:bg-map-600 flex flex-row items-center h-6 justify-evenly relative text-sm w-full">
       <div class="absolute bg-green-400 dark:bg-green-600 duration-500 ease-linear h-6 left-0 top-0 transition-[width] w-full" id="timeBar"></div>
-      <div class="absolute bg-purple-800 dark:bg-purple-200 duration-500 ease-linear h-6 left-0 top-0 transition-[width] w-0" id="scoreBar"></div>
+      <div class="absolute bg-purple-200 dark:bg-purple-400 duration-500 ease-linear h-6 left-0 top-0 transition-[width] w-0" id="scoreBar"></div>
       <p class="mb-0 text-sm z-20">Time Left: <span id="minutes">3</span>:<span id="seconds">00</span></p>
       <p class="mb-0 text-sm z-10"><span id="correct">0</span> / <span id="totalAnswers">26</span></p>
     </div>
 
-    <div class="flex justify-between my-1 w-full lg:w-1/2">
-      <button class="bg-gray-300 dark:bg-gray-700 shadow-emboss py-2 w-1/2" id="skipPrompt" type="button">Skip</button>
-      <button class="bg-gray-300 dark:bg-gray-700 shadow-emboss py-2 w-1/2" id="giveUp" type="button">Give Up</button>
+    <div class="bg-map-200 dark:bg-map-700 flex justify-between mt-1 w-full">
+      <button class="shadow-emboss py-2 w-1/2" id="skipPrompt" type="button">Skip</button>
+      <button class="shadow-emboss py-2 w-1/2" id="giveUp" type="button">Give Up</button>
     </div>
   `;
+  prompt.appendChild(content);
   // add hover states to buttons
   module.map.getContainer().appendChild(prompt);
   quiz.start();
@@ -300,8 +305,8 @@ quiz.revealAnswer = (answer) => {
     bearing: bearing,
     duration: 1500,
     linear: true,
-    maxZoom: 9,
-    // offset for prompt window on mobile
+    maxZoom: module.map.getZoom(),
+    offset: [0, 60],
   });
   module.map
     .setFilter("boundary-fills", quiz.getFilter("fill"))
@@ -356,6 +361,8 @@ quiz.end = (outcome) => {
     // stop the timer
     clearInterval(quiz.timer);
     quiz.siienComment.innerText = "Well done, you got them all!";
+    quiz.skipButton.classList.add("text-gray-500", "dark:text-gray-400");
+    quiz.skipButton.disabled = true;
     // prompt to share visual: 25/25 + time remaining (bars background?)
   }
 
@@ -436,6 +443,8 @@ quiz.highScore = () => {
 // fly through each missed answer after quiz is complete
 quiz.showRemaining = () => {
   quiz.siienComment.innerText = "Here's what you missed...";
+  quiz.skipButton.classList.add("text-gray-500", "dark:text-gray-400");
+  quiz.skipButton.disabled = true;
   const remaining = quiz.answerList.filter(
     (municipality) => !quiz.correctAnswers.includes(municipality),
   );
@@ -457,7 +466,8 @@ quiz.revealMissed = (answer) => {
     bearing: bearing,
     duration: 1500,
     linear: true,
-    maxZoom: 9,
+    // maxZoom: 11,
+    offset: [0, 60],
   });
   module.map
     .setFilter("boundary-fills", quiz.getMissedFilter("fill"))

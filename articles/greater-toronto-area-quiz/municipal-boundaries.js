@@ -26,7 +26,7 @@ function addLayers() {
     type: "fill",
     source: "municipal-boundaries",
     paint: {
-      "fill-color": "#FFF", // white
+      "fill-color": module.isDarkMode() ? "#FFF" : "#000",
       "fill-opacity": 0.2,
     },
   });
@@ -35,7 +35,7 @@ function addLayers() {
     type: "line",
     source: "municipal-boundaries",
     paint: {
-      "line-color": "#FFF", // white
+      "line-color": module.isDarkMode() ? "#FFF" : "#7035E6",
       "line-width": 2,
       "line-opacity": 0.2,
     },
