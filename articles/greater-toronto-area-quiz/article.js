@@ -301,12 +301,16 @@ quiz.correctGuess = (answer) => {
 quiz.revealAnswer = (answer) => {
   // fly to region, reveal
   const bearing = module.map.getBearing();
+  const offset = ["", "sm", "md"].includes(module.currentBreakpoint())
+    ? [0, 0]
+    : [0, 60];
   module.map.fitBounds(quiz.borderBox[answer], {
     bearing: bearing,
     duration: 1500,
     linear: true,
-    maxZoom: module.map.getZoom(),
-    offset: [0, 60],
+    maxZoom: module.map.getZoom() * 1.025,
+    offset: offset,
+    padding: 20,
   });
   module.map
     .setFilter("boundary-fills", quiz.getFilter("fill"))
@@ -462,12 +466,15 @@ quiz.showRemaining = () => {
 quiz.revealMissed = (answer) => {
   // fly to region, reveal
   const bearing = module.map.getBearing();
+  const offset = ["", "sm", "md"].includes(module.currentBreakpoint())
+    ? [0, -60]
+    : [0, 60];
   module.map.fitBounds(quiz.borderBox[answer], {
     bearing: bearing,
     duration: 1500,
     linear: true,
-    // maxZoom: 11,
-    offset: [0, 60],
+    maxZoom: 12,
+    offset: offset,
   });
   module.map
     .setFilter("boundary-fills", quiz.getMissedFilter("fill"))
