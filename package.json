@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "format": "npx prettier --check articles/*/*"
+  },
+  "dependencies": {
+    "prettier": "3.0.0"
+  }
+}

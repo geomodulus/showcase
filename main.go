@@ -23,12 +23,15 @@ import (
 	"github.com/geomodulus/citygraph"
 	graphdb "github.com/geomodulus/citygraph/db"
 	feedpb "github.com/geomodulus/citygraph/feed_producer/pb"
+	"github.com/geomodulus/robots/search"
 )
 
 func main() {
 	citygraphAddr := flag.String("citygraph-addr", "127.0.0.1:27615", "address string for citygraph indradb GRPC server")
 	feedProducerAddr := flag.String("feed-producer-addr", "127.0.0.1:3550", "address string for feed producer GRPC server")
 	articlesDir := flag.String("articles-dir", "articles", "directory with the actual content in it.")
+	openAIToken := flag.String("openai-token", "", "OpenAI API key")
+	pineconeAPIKey := flag.String("pinecone-api-key", "", "Pinecone API key")
 
 	flag.Parse()
 
@@ -60,23 +63,31 @@ func main() {
 	graphClient := citygraph.NewClient(graphConn)
 	store := &graphdb.Store{GraphClient: graphClient}
 
-	switch flag.Arg(0) {
+	log.Println("Processing articles:")
+	processArticles(ctx, store, feedClient, *articlesDir)
 
-	case "articles":
-		if slug := flag.Arg(1); slug != "" {
-			log.Printf("Processing article %q:", slug)
-			dir := filepath.Join(*articlesDir, slug)
-			processArticle(ctx, store, feedClient, dir)
-		} else {
-			log.Println("Processing all existing articles:")
-			if _, err := processArticles(ctx, store, feedClient, *articlesDir); err != nil {
-				log.Fatalf("error processing articles: %v", err)
+	if (*openAIToken != "") && (*pineconeAPIKey != "") {
+		log.Println("Ingesting all articles for search")
+		articles, err := readArticles(*articlesDir)
+		if err != nil {
+			log.Fatalf("error reading articles: %v", err)
+		}
+		// Filter out articles that are not live
+		var liveArticles []*citygraph.Article
+		for _, article := range articles {
+			if article.IsLive {
+				liveArticles = append(liveArticles, article)
 			}
 		}
-
-	case "":
-		log.Println("Processing articles:")
-		processArticles(ctx, store, feedClient, *articlesDir)
+		// Create a new search client with the OpenAI API key and Pinecone API key.
+		searchClient, err := search.NewClient(*openAIToken, *pineconeAPIKey)
+		if err != nil {
+			log.Fatalf("error creating search client: %v", err)
+		}
+		// Generate embeddings for articles
+		if err := searchClient.Generate(liveArticles); err != nil {
+			log.Fatalf("error generating search: %v", err)
+		}
 	}
 
 }
