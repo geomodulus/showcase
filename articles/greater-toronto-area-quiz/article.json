@@ -1,0 +1,37 @@
+{
+  "id": "9a11951a-d090-11ec-9d64-0242ac120002",
+  "display_name": "The great Greater Toronto and Hamilton Area municipality quiz",
+  "h2": "How many GTHA municipalities can you name in three minutes?",
+  "img_url": "https://media.geomodul.us/img/GTA-highway.jpg",
+  "is_live": true,
+  "categories": ["Fun"],
+  "authors": ["Torontoverse Staff"],
+  "pub_date": "2022-06-07",
+  "code_credit": "Kyle Duncan",
+  "promo_start": "2022-04-19T10:30:00-05:00",
+  "promo_until": "2023-07-01T12:00:00-05:00",
+  "promo_wait": "1h0m0s",
+  "promo_expires": "2023-01-25T20:32:23.193779372-05:00",
+  "camera": {
+    "": {
+      "center": [-79.672, 44.0246],
+      "zoom": 7
+    },
+    "lg": {
+      "center": [-79.4275, 43.7826],
+      "zoom": 8.9
+    }
+  },
+  "geojson_datasets": [
+    {
+      "id": "9a1197cc-d090-11ec-9d64-0242ac120002",
+      "name": "municipal-boundaries",
+      "url": "https://media.geomodul.us/articles/municipal-quiz/municipal-boundaries.geojson"
+    },
+    {
+      "id": "9a119920-d090-11ec-9d64-0242ac120002",
+      "name": "municipal-centres",
+      "url": "https://media.geomodul.us/articles/municipal-quiz/municipal-centre-points.geojson"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "c0ac6efb-e84f-11ed-b26d-c4bde51bd320",
+  "display_name": "North to Richmond Hill: Breaking down the 8-km Yonge subway extension",
+  "past_names": null,
+  "h2": "Toronto’s next big mass transit project just took a significant step forward. Here’s the latest.",
+  "img_url": "https://media.geomodul.us/img/yonge-subway-train.jpg",
+  "is_live": true,
+  "categories": ["Transit"],
+  "authors": ["Reece Martin"],
+  "camera": {
+    "": {
+      "bearing": -70,
+      "center": [-79.4193, 43.8165],
+      "zoom": 10.35
+    },
+    "lg": {
+      "bearing": -30,
+      "center": [-79.4364, 43.8048],
+      "zoom": 11.7
+    }
+  },
+  "pub_date": "2023-05-03",
+  "code_credit": "Kyle Duncan",
+  "promo_start": "2023-05-03T16:57:07.398762-04:00",
+  "promo_until": "2024-02-07T09:46:35.184439-05:00",
+  "promo_wait": "1h0m0s",
+  "promo_expires": "2023-08-07T09:50:51.858424-04:00",
+  "related": [
+    "d06887b4-b851-11ed-98b9-66eb68fb8db0",
+    "234b8f86-cfc2-11ec-9d64-0242ac120002",
+    "21df7ca8-c354-11ed-9cc7-66eb68fb8db0"
+  ],
+  "teaser": {
+    "features": [
+      {
+        "geometry": {
+          "coordinates": [
+            [-79.416009, 43.780757],
+            [-79.417316, 43.787055],
+            [-79.420045, 43.798037],
+            [-79.422383, 43.80714],
+            [-79.425965, 43.822806],
+            [-79.426095, 43.823977],
+            [-79.426105, 43.824316],
+            [-79.426046, 43.824701],
+            [-79.425773, 43.825052],
+            [-79.425281, 43.825257],
+            [-79.424591, 43.825438],
+            [-79.414926, 43.827652],
+            [-79.414407, 43.827864],
+            [-79.414158, 43.82811],
+            [-79.41413, 43.828356],
+            [-79.414195, 43.828748],
+            [-79.414434, 43.829127],
+            [-79.414865, 43.829666],
+            [-79.419296, 43.834164]
+          ],
+          "type": "LineString"
+        },
+        "properties": {
+          "line-interactions-layer": {},
+          "lines-layer": {
+            "line-color": "#FFD515",
+            "line-width": 10
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [
+            [-79.419296, 43.834164],
+            [-79.423182, 43.838503],
+            [-79.425963, 43.841453]
+          ],
+          "type": "LineString"
+        },
+        "properties": {
+          "line-interactions-layer": {},
+          "lines-layer": {
+            "line-color": "#E2871F",
+            "line-width": 10
+          }
+        },
+        "type": "Feature"
+      }
+    ],
+    "type": "FeatureCollection"
+  }
+}

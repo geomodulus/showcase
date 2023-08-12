@@ -1,0 +1,242 @@
+{
+  "id": "549c9021-f58d-11ed-9034-c4bde51bd320",
+  "display_name": "We mapped Toronto auto thefts. Here are the hardest-hit areas.",
+  "past_names": null,
+  "h2": "More than 8,700 vehicles were stolen in Toronto in 2022, with a disproportionate amount from the west side of the city.",
+  "img_url": "https://media.geomodul.us/img/auto-thefts-map-header.jpg",
+  "is_live": true,
+  "categories": ["Crime Data"],
+  "authors": ["Torontoverse Staff"],
+  "camera": {
+    "": {
+      "center": [-79.373, 43.7079],
+      "pitch": 65,
+      "zoom": 9.4
+    },
+    "lg": {
+      "center": [-79.3458, 43.7422],
+      "zoom": 10.4
+    }
+  },
+  "pub_date": "2023-05-24",
+  "code_credit": "Kyle Duncan",
+  "promo_start": "2023-05-24T13:18:37.801504-04:00",
+  "promo_until": "2024-02-11T13:16:08.747558-05:00",
+  "promo_wait": "1h0m0s",
+  "promo_expires": "0001-01-01T00:00:00Z",
+  "related": [
+    "3df29079-d3c8-11ed-90dc-244bfe5bf61a",
+    "332c22da-d76c-445b-b52f-582f54b78791"
+  ],
+  "geojson_datasets": [
+    {
+      "id": "90ea0270-f672-11ed-b67e-0242ac120002",
+      "name": "auto-thefts",
+      "url": "https://media.geomodul.us/articles/auto-thefts-2022/auto-thefts-minimized.geojson",
+      "source": {
+        "title": "Auto Theft Open Data",
+        "provider": "Toronto Police Service",
+        "url": "https://data.torontopolice.on.ca/datasets/TorontoPS::auto-theft-open-data/explore?location=43.715850%2C-79.373462%2C10.13",
+        "date_acquired": "2023-05-19T14:27:25-05:00",
+        "description": "This dataset includes all Auto Theft occurrences by reported date and related offences",
+        "license": "Open Government Licence – Ontario - v1",
+        "license_url": "https://www.ontario.ca/page/open-government-licence-ontario"
+      }
+    },
+    {
+      "id": "1fd6f722-f673-11ed-b67e-0242ac120002",
+      "name": "neighbourhoods",
+      "url": "https://media.geomodul.us/articles/auto-thefts-2022/updated-neighbourhoods.geojson",
+      "source": {
+        "title": "Neighbourhoods",
+        "provider": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/neighbourhoods/",
+        "date_acquired": "2023-05-19T14:31:44-05:00",
+        "description": "Toronto’s 158 neighbourhoods are a microcosm of the city’s inhabitants, cultures and life.",
+        "license": "Open Government Licence – Ontario - v1",
+        "license_url": "https://www.ontario.ca/page/open-government-licence-ontario"
+      }
+    }
+  ],
+  "teaser": {
+    "features": [
+      {
+        "geometry": {
+          "coordinates": [-79.39507456661651, 43.7102542213602],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.41154142990736, 43.7713708245431],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.1945314002376, 43.74852512039914],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.37354773383687, 43.6331568769636],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.54187685688528, 43.626147910694854],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.33732577303518, 43.67600817830644],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.43706598631694, 43.65520623727888],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.45667037859972, 43.71474437552006],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.4896287462501, 43.764554695774564],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.3543757363532, 43.802852655977574],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      },
+      {
+        "geometry": {
+          "coordinates": [-79.59434863282931, 43.717199463481094],
+          "type": "Point"
+        },
+        "properties": {
+          "circle-interactions-layer": {},
+          "symbols-layer": {
+            "icon-image": "car-icon",
+            "icon-size-max": 1,
+            "icon-size-min": 0.75,
+            "icon-url": "https://media.geomodul.us/img/icons/car-flaticon-64.png"
+          }
+        },
+        "type": "Feature"
+      }
+    ],
+    "type": "FeatureCollection"
+  }
+}
