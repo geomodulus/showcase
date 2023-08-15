@@ -6,7 +6,6 @@ function goFullScreen() {
 goFullScreen();
 
 function showPopup(content) {
-  // const defaultHTML = module.defaultPopupHTML(content.innerHTML);
   module.clearPopups();
   module.showPopup(
     new mapboxgl.Popup({
@@ -36,6 +35,7 @@ const quiz = {
   timer: null, // stores interval timer later
   // totalAnswers: 0,
   totalCount: 0,
+  rainbow: null, // stores interval timer later
   result: {
     score: 0,
     time: {},
@@ -148,12 +148,14 @@ quiz.showInstructions = () => {
 
 quiz.showPrompt = () => {
   module.clearPopups();
-  // create a persistent element at the bottom center of the map that shows:
-  // the next municipality to guess
-  // the time remaining
-  // the number of correct answers
-  // a button to skip to the next municipality
-  // a button to end the quiz
+  /*
+  create a persistent element at the bottom center of the map that shows:
+  - the next municipality to guess
+  - the time remaining
+  - the number of correct answers
+  - a button to skip to the next municipality
+  - a button to end the quiz
+  */
   const prompt = document.createElement("div");
   prompt.className =
     "absolute bg-map-100 dark:bg-map-800 bottom-14 lg:bottom-10 cursor-default default-popoup flex flex-col inset-x-2.5 md:inset-x-1/4 lg:inset-x-1/3 items-center justify-center";
@@ -185,6 +187,9 @@ quiz.showPrompt = () => {
   prompt.appendChild(content);
   // add hover states to buttons
   module.map.getContainer().appendChild(prompt);
+  window.addEventListener("flexWindowReset", () => {
+    document.getElementById("promptPopup").remove();
+  });
   quiz.start();
 };
 
@@ -196,7 +201,8 @@ quiz.newPrompt = () => {
 quiz.start = () => {
   /* INITIALIZE QUIZ */
   // grab visual elements
-  //text
+
+  // text
   quiz.siienComment = document.getElementById("commentText");
   quiz.prompt = document.getElementById("prompt");
   quiz.minutes = document.getElementById("minutes");
@@ -206,7 +212,7 @@ quiz.start = () => {
   // elements
   quiz.scoreBar = document.getElementById("scoreBar");
   quiz.timeBar = document.getElementById("timeBar");
-  //buttons
+  // buttons
   quiz.endButton = document.getElementById("giveUp");
   quiz.skipButton = document.getElementById("skipPrompt");
 
@@ -404,13 +410,15 @@ quiz.showResult = () => {
   let comment = quiz.comments.result.worst;
   if (score > 0) comment = quiz.comments.result.worse;
   if (score > 10) comment = quiz.comments.result.better;
-  if (score > 20) {
-    comment = quiz.comments.result.best;
-    // quiz.highScore();
+  if (score > 20) comment = quiz.comments.result.best;
+  if (score == quiz.totalCount) {
+    // replaces question with extra victory message and rainbow
+    const prompt = document.getElementById("prompt").parentElement;
+    prompt.innerHTML = `Congratulations - a perfect score!`;
+    quiz.highScore(document.getElementById("promptPopup").firstElementChild);
   }
   // replace with score and comment
   const results = [
-    // "Game Over!",
     `You got ${score} out of ${quiz.totalCount} municipalities with ${timeLeft}.`,
     comment,
     "Thanks for playing!",
@@ -423,22 +431,20 @@ quiz.showResult = () => {
 };
 
 // make it look fun and exciting
-quiz.highScore = () => {
-  const siienBox = document.getElementById("siienBox");
+quiz.highScore = (element) => {
   const colors = ["#7C3AED", "#00B073", "#00C1D4", "#EB6894"];
-  siienBox.style.borderTopColor = colors[0];
-  siienBox.style.borderLeftColor = colors[1];
-  siienBox.style.borderBottomColor = colors[2];
-  siienBox.style.borderRightColor = colors[3];
+  element.style.borderTopColor = colors[0];
+  element.style.borderLeftColor = colors[1];
+  element.style.borderBottomColor = colors[2];
+  element.style.borderRightColor = colors[3];
   quiz.rainbow = setInterval(() => {
     colors.push(colors[0]);
     colors.shift();
-    siienBox.style.borderTopColor = colors[0];
-    siienBox.style.borderLeftColor = colors[1];
-    siienBox.style.borderBottomColor = colors[2];
-    siienBox.style.borderRightColor = colors[3];
+    element.style.borderTopColor = colors[0];
+    element.style.borderLeftColor = colors[1];
+    element.style.borderBottomColor = colors[2];
+    element.style.borderRightColor = colors[3];
   }, 1000);
-  quiz.siien.classList.add("animate-bounce");
 };
 
 // fly through each missed answer after quiz is complete
@@ -502,10 +508,7 @@ quiz.reset = () => {
     }
   }
 
-  // if (quiz.rainbow) {
-  //   clearInterval(quiz.rainbow);
-  //   quiz.siien.classList.remove("animate-bounce");
-  // }
+  if (quiz.rainbow) clearInterval(quiz.rainbow);
 
   clearInterval(quiz.timer);
   clearInterval(quiz.resultScroll);
@@ -529,7 +532,7 @@ quiz.reset = () => {
   module.map.once("idle", quiz.showInstructions);
 };
 
-// add intro content to legend
+// add intro content to legend/article body?
 
 // add a listener to the map that shows the intro popup when the map is idle
 module.map.once("idle", () => {
