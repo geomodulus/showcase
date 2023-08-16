@@ -108,7 +108,7 @@ quiz.showIntro = () => {
     </figure>
     
     <p>You’ve come to a site called Torontoverse, so you must have at least <i>some</i> knowledge of the place. Or you came by mistake. Whatever.</p>
-    <p> The point is: The Greater Toronto and Hamilton Area is made up of 26 distinct places — a mix of urban, suburban, and rural municipalities. How many of them can you name? </p>
+    <p> The point is: The Greater Toronto and Hamilton Area is made up of 26 distinct places — a mix of urban, suburban, and rural municipalities. How many of them can you pick out on a map? </p>
     <div>
       <button class="bg-gray-300 dark:bg-gray-700 mt-2 py-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Take the Torontoverse quiz to find out!</button>
     </div>
@@ -136,7 +136,7 @@ quiz.showInstructions = () => {
     <div class="space-y-2">
       <h2 class="text-base lg:text-lg">Instructions</h2>
       <p class="text-sm lg:text-base">We’ll give you the names of the <span class="font-bold">municipalities</span> — just click or tap on the map where you think they can be found.</p>
-      <p class="text-sm lg:text-base">You've got 3 minutes, and can skip one if you get stuck. Click “Start Quiz" to begin. Good luck!</p>
+      <p class="text-sm lg:text-base">You’ve got three minutes, and can skip any municipality if you get stuck. Click “Start Quiz” below to begin. Good luck!</p>
       <button class="bg-gray-300 dark:bg-gray-700 mt-2 p-2 shadow-emboss text-center text-map-800 dark:text-gray-100 w-full" id="start-quiz">Start Quiz</button>
     </div>
   `;
