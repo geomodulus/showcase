@@ -41,4 +41,4 @@ jobs:
           status: ${{ job.status }}
           notify_when: "failure"
         env:
-          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SHIPPER_WEBHOOK }}
