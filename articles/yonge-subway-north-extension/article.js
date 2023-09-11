@@ -1,3 +1,4 @@
+// object with properties for each "scene"
 const sceneList = [
   {
     id: "zoomIn",
@@ -51,7 +52,7 @@ function addScenes() {
   const scenes = module.newSceneList("yonge-north-extension");
   sceneList.forEach((s) => {
     scenes.add(s.id, s.camera);
-    module.addScrollTrigger(`#${s.id}`, 0, () => {
+    module.addScrollTrigger(`.${s.id}`, 0, () => {
       scenes.goTo(s.id);
       s.function();
     });
@@ -357,6 +358,7 @@ function addGoLine() {
   });
 }
 
+
 fetch(
   "https://media.geomodul.us/articles/yonge-north-subway-extension/richmondHill.geojson",
 )
@@ -420,5 +422,3 @@ fetch(
     });
   })
   .catch((e) => console.error(e));
-
-module.initAdUnits();
