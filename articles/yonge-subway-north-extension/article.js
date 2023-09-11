@@ -55,7 +55,7 @@ function addScenes() {
   sceneList.forEach((s) => {
     scenes.add(s.id, s.camera);
     // add a scroll trigger for each scene
-    module.addScrollTrigger(`.${s.id}`, 0, () => {
+    module.addScrollTrigger(`#${s.id}`, 0, () => {
       scenes.goTo(s.id);
       s.function();
     });
