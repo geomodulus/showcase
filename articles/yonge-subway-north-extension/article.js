@@ -1,3 +1,4 @@
+// object with properties for each "scene"
 const sceneList = [
   {
     id: "zoomIn",
@@ -48,17 +49,22 @@ const sceneList = [
 ];
 
 function addScenes() {
+  // create a scene handler
   const scenes = module.newSceneList("yonge-north-extension");
+  // add each scene to the handler
   sceneList.forEach((s) => {
     scenes.add(s.id, s.camera);
-    module.addScrollTrigger(`#${s.id}`, 0, () => {
+    // add a scroll trigger for each scene
+    module.addScrollTrigger(`.${s.id}`, 0, () => {
       scenes.goTo(s.id);
       s.function();
     });
   });
+  // add buttons to move between scenes
   module.addButtonsForList(scenes);
 }
 
+// create a legened element based on it's type and properties
 function buildLegendLi(properties) {
   const { label, image, colour } = properties;
   const li = document.createElement("li");
@@ -96,7 +102,9 @@ function buildLegendLi(properties) {
 }
 
 function addLegend() {
+  // set the legend title
   module.setLegendTitle("Yonge North Subway Extension");
+  // establish the legend categories and colours for each
   const categories = [
     {
       label: "Tunneled Line (approximate)",
@@ -139,18 +147,21 @@ function addLegend() {
       colour: "bg-[#108DF6]",
     },
   ];
+  // create a container and add each element
   const ul = document.createElement("ul");
   categories.forEach((c) => ul.appendChild(buildLegendLi(c)));
-  const source = document.createElement("p");
   module.addToLegend(ul);
+  // create an element to credit the source
+  const source = document.createElement("p");
   source.className = "mt-3";
   source.innerHTML = `Source: <a href="https://www.metrolinx.com/en/projects-and-programs/yonge-north-subway-extension" target="_blank">Metrolinx Project Page</a>`;
   module.addToLegend(source);
+  // load the legend with all elements added
   module.initLegend();
 }
 
+// establish consistent line width and starting opacity
 const lineWidth = ["interpolate", ["linear"], ["zoom"], 14, 5, 20, 10];
-
 const opacity = [
   "case",
   [
@@ -162,6 +173,7 @@ const opacity = [
   0.25,
 ];
 
+// add the Yonge line and stops, including extension details to the map
 function addLines() {
   module.addFeatureLayer({
     id: "yonge-ext-line-highlight",
@@ -228,7 +240,7 @@ function addLines() {
     filter: [
       "all",
       ["==", ["geometry-type"], "Point"],
-      ["!=", ["get", "TYPE"], "tunnel-portal"], // add tunnel portal separately?
+      ["!=", ["get", "TYPE"], "tunnel-portal"],
     ],
     source: "yonge-north-extension",
     type: "circle",
@@ -279,6 +291,7 @@ function addLines() {
   });
 }
 
+// fetch the data for the Yonge line and stops and trigger main build
 function addMainViz() {
   fetch(
     "https://media.geomodul.us/articles/yonge-north-subway-extension/yonge-north-extension.geojson",
@@ -296,6 +309,7 @@ function addMainViz() {
     .catch((e) => console.error(e));
 }
 
+// add the Richmond Hill Go line to the map
 function addGoLine() {
   module.addFeatureLayer({
     id: "richmond-line",
@@ -357,6 +371,7 @@ function addGoLine() {
   });
 }
 
+// fetch the data for the Richmond Hill Go line and trigger build
 fetch(
   "https://media.geomodul.us/articles/yonge-north-subway-extension/richmondHill.geojson",
 )
@@ -371,6 +386,41 @@ fetch(
   })
   .catch((e) => console.error(e));
 
+// add the Viva BRT lines to the map
+function addVivaLines() {
+  module.addFeatureLayer({
+    id: "bus-routes",
+    source: "bus-routes",
+    type: "line",
+    paint: {
+      "line-color": "#108DF6",
+      "line-opacity": module.isDarkMode() ? 0.25 : 0.2,
+      "line-width": lineWidth,
+    },
+    layout: {
+      "line-cap": "round",
+    },
+  });
+  module.addVizLayer({
+    id: "bus-label",
+    source: "bus-routes",
+    type: "symbol",
+    layout: {
+      "symbol-placement": "line",
+      "text-field": "Viva BRT Line",
+      "text-font": ["JetBrains Mono Regular"],
+      "text-size": ["interpolate", ["linear"], ["zoom"], 10, 16, 20, 22],
+    },
+    paint: {
+      "text-color": "#FFF",
+      "text-halo-color": "#7035E6",
+      "text-halo-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 20, 2],
+      "text-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0.25, 20, 0.5],
+    },
+  });
+}
+
+// fetch the data for the Viva BRT lines and trigger build
 fetch(
   "https://media.geomodul.us/articles/yonge-north-subway-extension/viva-brt-routes.geojson",
 )
@@ -380,45 +430,6 @@ fetch(
       data: d,
       type: "geojson",
     });
-    module.addFeatureLayer({
-      id: "bus-routes",
-      source: "bus-routes",
-      type: "line",
-      paint: {
-        "line-color": "#108DF6",
-        "line-opacity": module.isDarkMode() ? 0.25 : 0.2,
-        "line-width": lineWidth,
-      },
-      layout: {
-        "line-cap": "round",
-      },
-    });
-    module.addVizLayer({
-      id: "bus-label",
-      source: "bus-routes",
-      type: "symbol",
-      layout: {
-        "symbol-placement": "line",
-        "text-field": "Viva BRT Line",
-        "text-font": ["JetBrains Mono Regular"],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 10, 16, 20, 22],
-      },
-      paint: {
-        "text-color": "#FFF",
-        "text-halo-color": "#7035E6",
-        "text-halo-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 20, 2],
-        "text-opacity": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          10,
-          0.25,
-          20,
-          0.5,
-        ],
-      },
-    });
+    addVivaLines();
   })
   .catch((e) => console.error(e));
-
-module.initAdUnits();
