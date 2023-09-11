@@ -1,3 +1,4 @@
+// hide the article window
 function goFullScreen() {
   const fullscreen = document.querySelector(".mapctrl-fullscreen");
   if (fullscreen) fullscreen.click();
@@ -5,6 +6,7 @@ function goFullScreen() {
 }
 goFullScreen();
 
+// show a popup for the intro or instructions
 function showPopup(content) {
   module.clearPopups();
   module.showPopup(
@@ -19,6 +21,7 @@ function showPopup(content) {
   );
 }
 
+// initialize data to be used throughout the quiz
 const quiz = {
   // establish objects for data
   answerList: [],
@@ -42,6 +45,7 @@ const quiz = {
   },
 };
 
+// initialize comments for responses and end of quiz
 quiz.comments = {
   result: {
     best: "You’re the Greater-est. Drake should write a song about you.", // 21–25 correct
@@ -73,12 +77,13 @@ quiz.comments = {
   ],
 };
 
+// return a random index of an array
 quiz.getRandom = (array) => {
   const randomIndex = Math.floor(Math.random() * array.length);
   return array[randomIndex];
 };
 
-// show an intro popup
+// show the intro popup
 quiz.showIntro = () => {
   const container = document.createElement("div");
   const content = document.createElement("div");
@@ -146,16 +151,14 @@ quiz.showInstructions = () => {
     .addEventListener("click", quiz.showPrompt);
 };
 
+// create a persistent element at the bottom center of the map that shows:
+// - the next municipality to guess
+// - the time remaining
+// - the number of correct answers
+// - a button to skip to the next municipality
+// - a button to end the quiz
 quiz.showPrompt = () => {
   module.clearPopups();
-  /*
-  create a persistent element at the bottom center of the map that shows:
-  - the next municipality to guess
-  - the time remaining
-  - the number of correct answers
-  - a button to skip to the next municipality
-  - a button to end the quiz
-  */
   const prompt = document.createElement("div");
   prompt.className =
     "absolute bg-map-100 dark:bg-map-800 bottom-14 lg:bottom-10 cursor-default default-popoup flex flex-col inset-x-2.5 md:inset-x-1/4 lg:inset-x-1/3 items-center justify-center";
@@ -180,12 +183,11 @@ quiz.showPrompt = () => {
     </div>
 
     <div class="bg-map-200 dark:bg-map-700 flex justify-between mt-1 w-full">
-      <button class="shadow-emboss py-2 w-1/2" id="skipPrompt" type="button">Skip</button>
-      <button class="shadow-emboss py-2 w-1/2" id="giveUp" type="button">Give Up</button>
+      <button class="hover:bg-map-100 dark:hover:bg-map-800 shadow-emboss py-2 w-1/2" id="skipPrompt" type="button">Skip</button>
+      <button class="hover:bg-map-100 dark:hover:bg-map-800 shadow-emboss py-2 w-1/2" id="giveUp" type="button">Give Up</button>
     </div>
   `;
   prompt.appendChild(content);
-  // add hover states to buttons
   module.map.getContainer().appendChild(prompt);
   window.addEventListener("flexWindowReset", () => {
     document.getElementById("promptPopup").remove();
@@ -198,10 +200,9 @@ quiz.newPrompt = () => {
   quiz.prompt.innerText = quiz.currentPrompt;
 };
 
+/* INITIALIZE QUIZ */
 quiz.start = () => {
-  /* INITIALIZE QUIZ */
   // grab visual elements
-
   // text
   quiz.siienComment = document.getElementById("commentText");
   quiz.prompt = document.getElementById("prompt");
@@ -215,10 +216,11 @@ quiz.start = () => {
   // buttons
   quiz.endButton = document.getElementById("giveUp");
   quiz.skipButton = document.getElementById("skipPrompt");
-
+  // listen for responses and other elements
   module.handleCursor("boundary-fills", quiz.checkAnswer);
   quiz.skipButton.addEventListener("click", quiz.newPrompt);
   quiz.endButton.addEventListener("click", quiz.giveUp);
+  // load and start the quiz
   quiz.buildData();
   quiz.newPrompt();
   quiz.startTimer();
@@ -301,7 +303,6 @@ quiz.correctGuess = (answer) => {
   if (quiz.correctAnswers.length === quiz.masterTotals.answers) {
     setTimeout(() => quiz.end("win"), 1000);
   } else quiz.newPrompt();
-  //  else quiz.animateSiien("bounce");
 };
 
 quiz.revealAnswer = (answer) => {
@@ -341,6 +342,7 @@ quiz.timeLeftPercentage = ({ minutes, seconds }) => {
   return percentage;
 };
 
+// make sure the shorter bar is on top of the other
 quiz.checkBarZindex = () => {
   const scoreWidth = +quiz.scoreBar.style.width.slice(0, -1);
   const timeWidth = +quiz.timeBar.style.width.slice(0, -1);
@@ -531,8 +533,6 @@ quiz.reset = () => {
 
   module.map.once("idle", quiz.showInstructions);
 };
-
-// add intro content to legend/article body?
 
 // add a listener to the map that shows the intro popup when the map is idle
 module.map.once("idle", () => {
