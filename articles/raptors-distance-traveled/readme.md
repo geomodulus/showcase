@@ -8,6 +8,8 @@ The article was designed to be updated for different games using the public [sta
 
 The routes and distance to our POI collection were calculated and stored in a static file using the [mapbox directions API](https://docs.mapbox.com/api/navigation/directions/), being manually updated as new POI were added.
 
+[Click to see the live article](https://torontoverse.com/articles/oG6ETg3WEe2GHQJCrBIAAg/how-far-did-each-raptor)
+
 ## How to update the game/distances
 
 1. Get distances from [NBA stats](https://www.nba.com/stats/players/speed-distance?TeamID=1610612761&LastNGames=1&Location=Home) ("Dist. Miles" by player)
