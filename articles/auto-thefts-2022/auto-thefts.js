@@ -1,3 +1,4 @@
+// establish array of location types
 const locations = [
   "Streets, Roads, Highways (Bicycle Path, Private Road)",
   "Parking Lots (Apt., Commercial Or Non-Commercial)",
@@ -38,6 +39,7 @@ const locations = [
   "Community Group Home",
 ];
 
+// show a notification when the year is changed (on mobile)
 let yearTimer;
 function updateDataLabel(year) {
   if (["", "sm", "md"].includes(module.currentBreakpoint())) {
@@ -65,12 +67,14 @@ function updateDataLabel(year) {
   }
 }
 
+// initialize a geojson object to hold the data
 const mappable = {
   type: "FeatureCollection",
   features: [],
 };
 const noGood = [];
 
+// collect data for the current selected year
 function filterData(year) {
   const thefts = mappable.features.filter((f) => f.properties.y == year);
   return {
@@ -79,12 +83,14 @@ function filterData(year) {
   };
 }
 
+// update the map with the selected year's data
 function updateViz(year) {
   const src = module.map.getSource("auto-theft");
   src.setData(filterData(year));
   updateDataLabel(year);
 }
 
+// build the year selector element
 const radioYears = document.createElement("div");
 radioYears.innerHTML = `
   <fieldset class="mb-3 -mt-4" id="year-selector">
@@ -113,6 +119,8 @@ radioYears.innerHTML = `
     </div>
   </fieldset>
 `;
+
+// build and initialize the legend
 function addLegend() {
   module.setLegendTitle("Toronto Auto Thefts");
   module.addToLegend(radioYears);
@@ -152,6 +160,7 @@ function addLegend() {
   selector.addEventListener("change", (e) => updateViz(e.target.value));
 }
 
+// show a popup for a theft location
 function showPopup(e) {
   module.clearPopups();
   const { l, p, n } = e.features[0].properties;
@@ -219,6 +228,7 @@ function showPopup(e) {
   });
 }
 
+// establish a consistent opacity
 const opacity = [
   "interpolate",
   ["linear"],
@@ -234,6 +244,7 @@ const opacity = [
 ];
 
 function displayData() {
+  // adds point clusters at higher zoom levels
   module.addVizLayer({
     id: "clusters",
     filter: ["has", "point_count"],
@@ -326,6 +337,7 @@ function displayData() {
 fetch(url)
   .then((r) => r.json())
   .then((d) => {
+    // remove data points outside of Toronto (mislabelled)
     d.features.forEach((f) => {
       if (
         f.geometry.coordinates[0] < -79.9 ||
@@ -345,6 +357,7 @@ fetch(url)
       data: mappable,
       type: "geojson",
     });
+    // load and display data for 2022
     updateViz(2022);
     displayData();
   })

@@ -1,9 +1,11 @@
+// hide selected mapbox layers to reduce visual clutter
 module.hideLayer("settlement-subdivision-label");
 module.hideLayer("settlement-minor-label");
 module.hideLayer("settlement-major-label");
 
 let currentYear = 2022;
 
+// update the visualisation based on the selected year
 function updateViz(year) {
   module.clearPopups();
   currentYear = year;
@@ -39,6 +41,7 @@ function updateViz(year) {
   ]);
 }
 
+// listen for the initial year selector to be added to the DOM and then add an event listener
 const interval = setInterval(() => {
   const selector = document.getElementById("year-selector");
   if (selector) {
@@ -47,6 +50,7 @@ const interval = setInterval(() => {
   }
 }, 1000);
 
+// establish consistent text colours
 const textColour = {
   red: "text-red-700 dark:text-red-500",
   orange: "text-orange-700 dark:text-orange-500",
@@ -54,6 +58,7 @@ const textColour = {
   blue: "text-blue-700 dark:text-blue-500",
 };
 
+// show the popup with the neighbourhood details
 function showDetails(e) {
   if (module.map.getLayer("clusters")) {
     const clusters = module.map.queryRenderedFeatures(e.point, {
@@ -110,6 +115,7 @@ function showDetails(e) {
       .setLngLat(center.geometry.coordinates)
       .setHTML(defaultHTML),
   );
+  // zoom to the neighbourhood
   module.map.fitBounds(bbox, {
     bearing: module.map.getBearing(),
     duration: 2500,
@@ -119,11 +125,13 @@ function showDetails(e) {
   });
 }
 
+// initialise an object to store upper limits
 const limits = {
   highestTotal: 0,
   highestPerKm: 0,
 };
 
+// build the neighbourhood visual and add it to the map
 let hoveredStateId = null;
 function addNeighbourhoods() {
   module.addUnderglowLayer({
@@ -207,7 +215,9 @@ function addNeighbourhoods() {
       ],
     },
   });
+  // show a popup on click
   module.handleCursor("neighbourhoods-trigger", showDetails);
+  // highlight the neighbourhood boundary on hover
   module.map.on("mousemove", "neighbourhoods-trigger", (e) => {
     if (e.features.length > 0) {
       if (hoveredStateId !== null) {
@@ -234,6 +244,7 @@ function addNeighbourhoods() {
   });
 }
 
+// get the upper limits for the data
 function getLimits(features) {
   features.forEach((f) => {
     [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].forEach((year) => {
@@ -247,6 +258,7 @@ function getLimits(features) {
   });
 }
 
+// fetch the neighbourhood data and begin building the visualisation
 fetch(url)
   .then((r) => r.json())
   .then((d) => {
