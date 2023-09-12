@@ -1,21 +1,13 @@
-// arena center
+// arena center coordinates
 const arena = {
   lng: -79.3790169712448,
   lat: 43.64344921310201,
 };
 
+// initialize object to store routes
 const routes = {};
 
-function addRoutePoint(id) {
-  const next = routes[id].coordinates.shift();
-  routes[id].geometry.coordinates.push(next);
-  module.map.getSource(`${id}-symbol`).setData({
-    type: "Point",
-    coordinates: next,
-  });
-  return routes[id].geometry;
-}
-
+// listen for article close to abandon animation
 let abort = false;
 window.addEventListener(
   "flexWindowReset",
@@ -31,6 +23,18 @@ window.addEventListener(
   { once: true },
 );
 
+// add new route point data and update map
+function addRoutePoint(id) {
+  const next = routes[id].coordinates.shift();
+  routes[id].geometry.coordinates.push(next);
+  module.map.getSource(`${id}-symbol`).setData({
+    type: "Point",
+    coordinates: next,
+  });
+  return routes[id].geometry;
+}
+
+// animate route by adding new point every frame
 function animateRoute(id) {
   if (routes[id].coordinates.length > 0 && !abort) {
     module.map.getSource(id).setData(addRoutePoint(id));
@@ -38,6 +42,7 @@ function animateRoute(id) {
   }
 }
 
+// Create and show player popup
 function showPopup(e) {
   const id = e.features[0].layer.id.slice(0, -7);
   const { destination, kilometers, player } = routes[id];
@@ -65,6 +70,7 @@ function showPopup(e) {
   }
 }
 
+// build player routes and add to map for animation
 function mapRoutes() {
   for (const player in routes) {
     const { geometry, image } = routes[player];
@@ -126,6 +132,7 @@ function mapRoutes() {
   }
 }
 
+// caclucates and zooms to a bounding box from all route points
 const bboxRaw = [[arena.lng, arena.lat]];
 function zoomToBbox() {
   let minLng, minLat, maxLng, maxLat;
@@ -157,6 +164,7 @@ function zoomToBbox() {
   module.map.once("idle", mapRoutes);
 }
 
+// match players distances to a POI and store in routes object
 const destinations = [];
 function findMatches(distances) {
   destinations.sort((a, b) => {
@@ -197,6 +205,7 @@ function findMatches(distances) {
   setTimeout(zoomToBbox, 1000);
 }
 
+// load available player images
 function addImages(data) {
   data.forEach((player) => {
     if (player.image && !module.map.hasImage(player.image)) {
@@ -211,6 +220,7 @@ function addImages(data) {
   });
 }
 
+// get updated distances data
 function getDistances() {
   fetch(
     "https://media.geomodul.us/articles/raptors-distance-travelled/distances.json",
@@ -223,6 +233,7 @@ function getDistances() {
     .catch((e) => console.log("error:", e));
 }
 
+// add the arena graphic to the map
 function addArena() {
   // add arena location as source
   module.addSource("scotiabank-arena", {
@@ -279,6 +290,7 @@ function addArena() {
   });
 }
 
+// load arena graphic
 if (!module.map.hasImage("scotiabank-arena")) {
   module.map.loadImage(
     "https://media.geomodul.us/img/scotiabank-arena-md.png",
@@ -290,6 +302,7 @@ if (!module.map.hasImage("scotiabank-arena")) {
   );
 } else addArena();
 
+// load basketball graphic for missing player images
 if (!module.map.hasImage("orange-bball")) {
   module.map.loadImage(
     "https://media.geomodul.us/img/raptor-heads/basketball-fill.png",
@@ -300,6 +313,7 @@ if (!module.map.hasImage("orange-bball")) {
   );
 }
 
+// load route data
 fetch(
   "https://media.geomodul.us/articles/raptors-distance-travelled/poi-routes.json",
 )
