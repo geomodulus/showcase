@@ -8,6 +8,8 @@ It fetches geojson data for the existing and proposed sections of TTC Line 1, an
 
 Finally, the particular scenes are created and connected to elements in the article that will be triggered using the [Scroll Magic](http://scrollmagic.io/) plugin.
 
+[Click to see the live article](https://torontoverse.com/articles/wKxu--hPEe2ybcS95RvTIA/north-to-richmond-hill-breaking)
+
 ---
 
 _Article written by [Reece Martin](https://rmtransit.com/)_
