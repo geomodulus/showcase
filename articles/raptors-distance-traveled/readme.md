@@ -47,7 +47,7 @@ function getDestinations(features) {
         };
         destinations.push(pair);
       })
-      .catch((e) => console.log("error:", e));
+      .catch((e) => console.error(e));
     fetches.push(p);
   });
   Promise.all(fetches).then(() => {

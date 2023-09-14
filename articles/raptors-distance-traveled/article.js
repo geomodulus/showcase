@@ -230,7 +230,7 @@ function getDistances() {
       addImages(d.data);
       findMatches(d);
     })
-    .catch((e) => console.log("error:", e));
+    .catch((e) => console.error(e));
 }
 
 // add the arena graphic to the map
@@ -322,4 +322,4 @@ fetch(
     d.forEach((l) => destinations.push(l));
     getDistances();
   })
-  .catch((e) => console.log("error:", e));
+  .catch((e) => console.error(e));
